@@ -18,7 +18,7 @@ bot.onText(/\/start/, (msg) => {
           {
             text: 'Launch App',
             web_app: {
-              url: `https://your-app-url.com/tapgame`, // Point to your deployed app
+              url: `https://dragontapgame-fe.onrender.com/tapgame`, // Point to your deployed app
             }
           }
         ]

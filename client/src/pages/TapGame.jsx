@@ -18,7 +18,7 @@ const TapGame = () => {
 
   const handleTap = async () => {
     try {
-      const response = await fetch(`/api/taps/tap`, {
+      const response = await fetch(`https://dragontapgame.onrender.com/api/taps/tap`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ telegramId }),
