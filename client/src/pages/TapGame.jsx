@@ -54,11 +54,10 @@
 
 import React, { useState, useEffect } from 'react';
 
-
 const TapGame = () => {
     const [firstName, setFirstName] = useState('Guest');
     const [lastName, setLastName] = useState('');
-    const [username, setUsername] = useState('');
+    const [username, setUsername] = useState('Guest');
 
     useEffect(() => {
         console.log('Checking Telegram WebApp Context:');
@@ -77,7 +76,6 @@ const TapGame = () => {
             console.log('Telegram WebApp not initialized');
         }
     }, []);
-
 
     return (
         <div>
