@@ -1,47 +1,52 @@
 import React, { useState, useEffect } from 'react';
 
 const TapGame = () => {
-    alert("def")
-  const [tapCount, setTapCount] = useState(0);
-  const [telegramId, setTelegramId] = useState(null);
-  const [username, setUsername] = useState('Guest');
+    const { first_name, last_name, username } = window.Telegram.WebApp.initDataUnsafe.user;
 
-  useEffect(() => {
-    // Check if Telegram WebApp context is available
-    if (window.Telegram.WebApp) {
-      const user = window.Telegram.WebApp.initDataUnsafe.user;
-      if (user) {
-        setTelegramId(user.id);
-        setUsername(user.username || 'Guest');
-      }
-    }
-  }, []);
+    //   const [tapCount, setTapCount] = useState(0);
+    //   const [telegramId, setTelegramId] = useState(null);
+    //   const [username, setUsername] = useState('Guest');
 
-  const handleTap = async () => {
-    try {
-      const response = await fetch(`https://dragontapgame.onrender.com/api/taps/tap`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ telegramId }),
-      });
-      const data = await response.json();
-      setTapCount(data.tapCount);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
+    //   useEffect(() => {
+    //     // Check if Telegram WebApp context is available
+    //     if (window.Telegram.WebApp) {
+    //       const user = window.Telegram.WebApp.initDataUnsafe.user;
+    //       if (user) {
+    //         setTelegramId(user.id);
+    //         setUsername(user.username || 'Guest');
+    //       }
+    //     }
+    //   }, []);
 
-  if (!telegramId) {
-    return <p>Loading...</p>;
-  }
+    //   const handleTap = async () => {
+    //     try {
+    //       const response = await fetch(`https://dragontapgame.onrender.com/api/taps/tap`, {
+    //         method: 'POST',
+    //         headers: { 'Content-Type': 'application/json' },
+    //         body: JSON.stringify({ telegramId }),
+    //       });
+    //       const data = await response.json();
+    //       setTapCount(data.tapCount);
+    //     } catch (error) {
+    //       console.error('Error:', error);
+    //     }
+    //   };
 
-  return (
-    <div>
-      <h1>Hello, {username}</h1>
+    //   if (!telegramId) {
+    //     return <p>Loading...</p>;
+    //   }
+
+    return (
+        <div>
+            <h1>Hello </h1>
+            <h2>{first_name}</h2>
+            <h2>{last_name}</h2>
+            <h2>{username}</h2>
+            {/* <h1>Hello, {username}</h1>
       <p>Current Tap Count: {tapCount}</p>
-      <button onClick={handleTap}>Tap!</button>
-    </div>
-  );
+      <button onClick={handleTap}>Tap!</button> */}
+        </div>
+    );
 };
 
 export default TapGame;
