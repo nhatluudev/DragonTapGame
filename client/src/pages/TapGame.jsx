@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 const TapGame = () => {
+    alert("def")
   const [tapCount, setTapCount] = useState(0);
   const [telegramId, setTelegramId] = useState(null);
   const [username, setUsername] = useState('Guest');

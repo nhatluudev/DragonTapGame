@@ -5,6 +5,7 @@ const App = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const telegramId = urlParams.get('telegramId');
   const username = urlParams.get('username');
+  alert("abc");
 
   return <TapApp telegramId={telegramId} username={username} />;
 };
