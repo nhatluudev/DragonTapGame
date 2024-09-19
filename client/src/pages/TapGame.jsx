@@ -54,16 +54,18 @@
 
 import React, { useState, useEffect } from 'react';
 
+
 const TapGame = () => {
     const [firstName, setFirstName] = useState('Guest');
     const [lastName, setLastName] = useState('');
     const [username, setUsername] = useState('');
 
     useEffect(() => {
-        // Check if Telegram WebApp context is available
-        console.log('DATAA')
-        console.log(window.Telegram)
+        console.log('Checking Telegram WebApp Context:');
+        console.log(window.Telegram); // Check if Telegram object exists
+
         if (window.Telegram && window.Telegram.WebApp) {
+            console.log('Telegram WebApp context is available');
             const user = window.Telegram.WebApp.initDataUnsafe.user;
             if (user) {
                 setFirstName(user.first_name || 'Guest');
@@ -72,8 +74,10 @@ const TapGame = () => {
             }
         } else {
             alert('Telegram WebApp not initialized');
+            console.log('Telegram WebApp not initialized');
         }
     }, []);
+
 
     return (
         <div>
