@@ -61,6 +61,8 @@ const TapGame = () => {
 
     useEffect(() => {
         // Check if Telegram WebApp context is available
+        console.log('DATAA')
+        console.log(window.Telegram)
         if (window.Telegram && window.Telegram.WebApp) {
             const user = window.Telegram.WebApp.initDataUnsafe.user;
             if (user) {
