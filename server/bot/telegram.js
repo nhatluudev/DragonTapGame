@@ -6,6 +6,7 @@ dotenv.config();
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
 bot.onText(/\/start/, (msg) => {
+    console.log(msg)
   const chatId = msg.chat.id;
   const username = msg.from.username || 'Guest'; // Fallback if username is undefined
   const telegramId = msg.from.id;
@@ -16,7 +17,7 @@ bot.onText(/\/start/, (msg) => {
       inline_keyboard: [
         [
           {
-            text: 'Launch App',
+            text: 'Launch App Hereee',
             web_app: {
               url: `https://dragontapgame-fe.onrender.com/tapgame`, // Point to your deployed app
             }
