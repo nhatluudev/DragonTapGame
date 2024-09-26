@@ -1,0 +1,21 @@
+.layout {
+    position: relative;
+    padding: 36px 28px;
+
+    .layout-bg {
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: calc(100% + 4px);
+        filter: brightness(0.3);
+        position: absolute;
+        height: 100vh;
+        z-index: -1;
+    }
+
+    .outlet-content {
+        border-radius: 20px;
+        height: calc(100vh - 160px);
+    }
+}

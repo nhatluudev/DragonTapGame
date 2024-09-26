@@ -1,0 +1,57 @@
+.rank {
+    .rank__statistic {
+        padding: 18px 28px 26px;
+
+        .rank__statistic-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            hr {
+                height: 28px;
+                width: 1px;
+                background-color: var(--gray-2-color);
+            }
+
+            .rank__statistic-item {
+                .rank__statistic-item__title {
+                    display: block;
+                    text-align: center;
+                }
+
+                .rank__statistic-item__sub-title {
+                    display: block;
+                    text-align: center;
+                }
+            }
+        }
+    }
+
+    .rank__leader-board {
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            text-align: center;
+
+
+            thead {
+                border-bottom: 1px solid var(--gray-2-color);
+            }
+
+            tbody {
+                tr {
+                    color: var(--gray-color);
+                }
+            }
+
+            th, td {
+                padding: 8px 0;
+            }
+
+            img {
+                height: 24px;
+                width: unset;
+            }
+        }
+    }
+}

@@ -1,0 +1,43 @@
+.navbar {
+    position: fixed;
+    bottom: 40px;
+    left: 28px;
+    right: 28px;
+    z-index: 100000;
+    background-color: var(--overlay-bg-color);
+    padding: 4px 28px;
+    border-radius: 20px;
+
+    .navbar-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .navbar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--gray-color);
+            padding: 8px 12px;
+            font-size: 1.2rem;
+
+            svg {
+                width: 22px;
+                height: 22px;
+                margin-bottom: 4px;
+                color: var(--gray-color);
+            }
+
+            &.active {
+                color: var(--highlight-green-color);
+                font-weight: bolder;
+
+                svg {
+                    fill: var(--highlight-green-color);
+                    color: var(--highlight-green-color);
+                    stroke: 2;
+                }
+            }
+        }
+    }
+}

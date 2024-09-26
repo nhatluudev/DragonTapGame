@@ -19,7 +19,7 @@ bot.onText(/\/start/, (msg) => {
                     {
                         text: 'Launch App',
                         web_app: {
-                            url: `https://dragontapgame-fe.onrender.com` // Frontend URL
+                            url: process.env.NODE_ENV == 'production' ? process.env.NODE_ENV : process.env.NODE_ENV
                         }
                     }
                 ]

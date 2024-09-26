@@ -1,42 +1,43 @@
-import express from 'express';
-import Tap from '../models/tap.model.js';
-const router = express.Router();
+import User from "../models/user.model.js";
 
-// Start tap game for the user
-router.post('/start', async (req, res) => {
-  const { telegramId, username } = req.body;
+class TapController {
+    // Tap logic remains the same as before...
+    tap = async (req, res, next) => {
+        try {
+            const { telegramId, firstName, lastName } = req.body;
+            let user = await User.findOne({ telegramId });
 
-  let user = await Tap.findOne({ telegramId });
-  if (!user) {
-    user = new Tap({ telegramId, username });
-    await user.save();
-  }
+            if (!user) {
+                user = new User({ telegramId, firstName, lastName, tokens: 1 });
+                await user.save();
+            } else {
+                user.tokens += 1;
+                await user.save();
+            }
 
-  res.json({ message: `Hello, ${username}! Your current tap count is ${user.tapCount}` });
-});
+            return res.json({ userTokens: user.tokens });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Server error' });
+        }
+    };
 
-// Increment tap count
-router.post('/tap', async (req, res) => {
-  const { telegramId } = req.body;
+    // Fetch user tokens logic...
+    readUserTokens = async (req, res, next) => {
+        try {
+            const { telegramId } = req.params;
+            const user = await User.findOne({ telegramId });
 
-  const user = await Tap.findOneAndUpdate(
-    { telegramId },
-    { $inc: { tapCount: 1 } },
-    { new: true }
-  );
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
 
-  if (!user) return res.status(404).json({ message: 'User not found' });
-  res.json({ message: `You tapped! Current tap count: ${user.tapCount}` });
-});
+            return res.json({ userTokens: user.tokens });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Server error' });
+        }
+    };
+}
 
-// Retrieve tap count
-router.get('/:telegramId', async (req, res) => {
-  const { telegramId } = req.params;
-
-  const user = await Tap.findOne({ telegramId });
-  if (!user) return res.status(404).json({ message: 'User not found' });
-
-  res.json({ tapCount: user.tapCount });
-});
-
-export default router;
+export default new TapController();

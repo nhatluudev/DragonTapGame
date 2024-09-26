@@ -1,0 +1,296 @@
+.tap-game {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+
+    .btn-4 {
+        align-self: center;
+
+        svg {
+            color: var(--highlight-green-color);
+            fill: var(--highlight-green-color);
+        }
+    }
+
+    .tap-game__main {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+        padding: 28px 40px;
+        height: 100%;
+        position: relative;
+
+        .tap-game__main__tapping {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0;
+            width: 220px;
+            height: 220px;
+            margin-left: 50%;
+            transform: translateX(-50%);
+            transition: 0.5s;
+
+            &:hover {
+                cursor: pointer;
+                /* 0.15s for fast flickering */
+            }
+
+
+
+            .tap-game__main__dragon {
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                z-index: 1;
+                transition: 0.5s;
+                animation: flickerAnimation 2s infinite;
+            }
+
+            /* Add the two animated circles */
+            &::before,
+            &::after {
+                content: "";
+                position: absolute;
+                border-radius: 50%;
+                width: 190px;
+                height: 190px;
+                z-index: 0;
+                animation: scale-border 3s infinite;
+                opacity: 0;
+                /* Set initial opacity to 0 */
+            }
+
+            &::before {
+                border: 30px solid var(--highlight-green-color);
+                animation-delay: 1s;
+                /* First circle starts immediately */
+            }
+
+            &::after {
+                border: 30px solid var(--highlight-green-color);
+                width: 210px;
+                /* Slightly larger */
+                height: 210px;
+                animation-delay: 2s;
+                /* Second circle starts after a short delay */
+            }
+
+            /* Star pop effect */
+            &.star-pop::before,
+            &.star-pop::after,
+            &.star-pop .star-medium {
+                content: url('./../assets/img/star.png');
+                position: absolute;
+                opacity: 0;
+                animation: pop-up 1.5s ease-in-out forwards;
+            }
+
+            &.star-pop::before {
+                width: 40px;
+                /* Big star */
+                height: 40px;
+                top: -60px;
+                left: 50%;
+                transform: translateX(-50%);
+                animation-delay: 0s;
+            }
+
+            &.star-pop::after {
+                width: 30px;
+                /* Medium star */
+                height: 30px;
+                top: -50px;
+                left: 65%;
+                transform: translateX(-50%);
+                animation-delay: 0.3s;
+            }
+
+            .star-medium {
+                width: 20px;
+                /* Small star */
+                height: 20px;
+                top: -40px;
+                left: 35%;
+                transform: translateX(-50%);
+                animation-delay: 0.6s;
+            }
+        }
+
+        .tap-game__main__extra {
+            // position: absolute;
+            // bottom: 28px;
+            // width: calc(100% - 80px);
+
+            img {
+                height: 40px;
+                margin-bottom: 16px;
+                margin-left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+    }
+
+    /* Keyframe for smooth scaling and opacity effect */
+    @keyframes scale-border {
+        0% {
+            opacity: 0.3;
+            transform: scale(0.8);
+        }
+
+        50% {
+            opacity: 0.05;
+            transform: scale(1.1);
+        }
+
+        100% {
+            opacity: 0;
+            transform: scale(1.1);
+        }
+    }
+}
+
+@keyframes flickerAnimation {
+    0% {
+        transform: translateY(0);
+        /* Starting position */
+    }
+
+    50% {
+        transform: translateY(-8px);
+        /* Move up by 5px */
+    }
+
+    100% {
+        transform: translateY(0);
+        /* Move back to original position */
+    }
+}
+
+/* Pop-up animation for stars */
+@keyframes pop-up {
+    0% {
+        transform: translateY(0) scale(0);
+        /* Start from the center */
+        opacity: 0;
+    }
+
+    50% {
+        transform: translateY(-60px) scale(1.2);
+        /* Move upwards and scale larger */
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-100px) scale(1);
+        /* Move upwards further and scale back */
+        opacity: 0;
+        /* Fade out */
+    }
+}
+
+
+/* Star container */
+.star-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    /* Ensure it stays on top */
+}
+
+/* Stars */
+.star {
+    position: absolute;
+    background-image: url('../../assets/img/token.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0;
+    animation: pop-up 1.2s ease-in-out forwards;
+}
+
+/* Big Star */
+.big-star {
+    width: 50px;
+    height: 50px;
+    top: -60px;
+    left: 40%;
+    transform: translateX(-50%);
+    animation-delay: 0s;
+}
+
+/* Medium Star */
+.medium-star {
+    width: 30px;
+    height: 30px;
+    top: -50px;
+    left: 75%;
+    transform: translateX(-50%);
+    animation-delay: 0.2s;
+}
+
+/* Small Star */
+.small-star {
+    width: 20px;
+    height: 80px;
+    top: -40px;
+    left: 15%;
+    transform: translateX(-50%);
+    animation-delay: 0.3s;
+}
+
+/* Pop-up animation for stars */
+// @keyframes pop-up {
+//     0% {
+//         transform: scale(0);
+//         opacity: 0;
+//     }
+
+//     50% {
+//         transform: scale(1.2);
+//         opacity: 1;
+//     }
+
+//     100% {
+//         transform: scale(1);
+//         opacity: 0;
+//     }
+// }
+
+
+/* The parent container for userTokens */
+.tokens-container {
+    position: relative;
+    display: inline-block;
+}
+
+/* The +1 that appears on tap */
+.token-increment {
+    position: absolute;
+    top: -30px;
+    left: -20px;
+    color: green;
+    font-size: 1.4rem;
+    font-weight: bold;
+    opacity: 0;
+    animation: showIncrement 1s forwards;
+}
+
+/* Keyframes for the +1 animation */
+@keyframes showIncrement {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}

@@ -1,0 +1,38 @@
+.mission {
+    .mission-container {
+        .mission-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--gray-2-color);
+            padding: 12px 0;
+
+            &:last-child {
+                border-bottom: unset;
+            }
+
+            .mission-item--left {
+                display: flex;
+                align-items: center;
+
+                .mission-item__title {
+                    font-size: 1.2rem;
+                }
+
+                .mission-item__sub-title {
+                    font-size: 1.1rem;
+                    margin-top: 4px;
+                }
+
+                .mission-item__ic {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 8px;
+                    margin-right: 8px;
+                }
+            }
+
+            .mission-item--right {}
+        }
+    }
+}
