@@ -3,7 +3,7 @@ import Navbar from "./components/navbar/Navbar";
 import DragonBackground from "./assets/img/background.jpg"
 
 // Styling
-import "./layout.scss"
+import "./Layout.scss"
 
 export default function Layout() {
 
