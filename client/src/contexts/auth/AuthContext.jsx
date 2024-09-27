@@ -35,8 +35,6 @@ export const AuthProvider = ({ children }) => {
             console.log(window.Telegram.WebApp.initDataUnsafe.user)
             if (window.Telegram && window.Telegram.WebApp) {
                 // window.Telegram.WebApp.onEvent('ready', () => {
-                // });
-
                 const { id: telegramId, first_name: firstName, last_name: lastName } = window.Telegram.WebApp.initDataUnsafe.user || {};
                 console.log(telegramId, firstName, lastName)
                 if (telegramId) {
@@ -45,6 +43,7 @@ export const AuthProvider = ({ children }) => {
                 } else {
                     console.error("Telegram user information is not available.");
                 }
+                // });
 
                 setIsLoading(false); // Set loading to false after initialization
             } else {
