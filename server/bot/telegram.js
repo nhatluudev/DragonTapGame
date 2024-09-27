@@ -19,7 +19,7 @@ bot.onText(/\/start/, (msg) => {
                     {
                         text: 'Launch App',
                         web_app: {
-                            url: process.env.NODE_ENV == 'production' ? process.env.NODE_ENV : process.env.NODE_ENV
+                            url: process.env.NODE_ENV == 'production' ? process.env.NODE_CLIENT_ORIGIN : process.env.NODE_CLIENT_LOCAL_ORIGIN
                         }
                     }
                 ]

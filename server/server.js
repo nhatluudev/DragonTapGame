@@ -65,6 +65,7 @@ bot.onText(/\/start/, (msg) => {
   const username = msg.from.username || 'Guest';
   console.log(chatId);
   console.log(username);
+  console.log(process.env.NODE_CLIENT_ORIGIN)
 
   bot.sendMessage(chatId, `Hello, ${username}! Click the button below to launch the tapping game.`, {
     reply_markup: {

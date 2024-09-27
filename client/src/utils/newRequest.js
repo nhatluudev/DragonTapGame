@@ -1,5 +1,7 @@
 import axios from 'axios';
-
+console.log(import.meta.env.VITE_ENV)
+console.log(import.meta.env.VITE_SERVER_ORIGIN)
+console.log(import.meta.env.VITE_SERVER_LOCAL_ORIGIN)
 const newRequest = axios.create({
     baseURL: (import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_SERVER_ORIGIN : import.meta.env.VITE_SERVER_LOCAL_ORIGIN) + "/api",
     withCredentials: true,
