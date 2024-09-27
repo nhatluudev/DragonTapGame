@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Outlet } from 'react-router-dom';
 import Navbar from "./components/navbar/Navbar";
 import DragonBackground from "./assets/img/background.jpg"
@@ -6,7 +7,6 @@ import DragonBackground from "./assets/img/background.jpg"
 import "./Layout.scss"
 
 export default function Layout() {
-
     return (
         <div className="layout">
             <img src={DragonBackground} alt="" className='layout-bg' />

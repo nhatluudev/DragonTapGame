@@ -13,7 +13,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
     const [userInfo, setUserInfo] = useState(null);
-    const [isLoading, setIsLoading] = useState(true); // Loading state
+    const [isLoading, setIsLoading] = useState(null); // Loading state
 
     // Function to create or fetch user from the server
     const initializeUser = async (telegramId, firstName, lastName) => {
@@ -28,24 +28,27 @@ export const AuthProvider = ({ children }) => {
     };
 
     useEffect(() => {
+        setIsLoading(true); // Set loading to true when initialization starts
+
         const initializeTelegram = () => {
             if (window.Telegram && window.Telegram.WebApp) {
                 window.Telegram.WebApp.onEvent('ready', () => {
                     const { id: telegramId, first_name: firstName, last_name: lastName } = window.Telegram.WebApp.initDataUnsafe.user || {};
-                    
+
                     if (telegramId) {
                         initializeUser(telegramId, firstName, lastName);
                     } else {
                         console.error("Telegram user information is not available.");
                     }
-    
-                    setIsLoading(false); // Set loading to false after initialization
                 });
+
+                setIsLoading(false); // Set loading to false after initialization
             } else {
-                console.error("Telegram WebApp is not available.");
+                console.error("Telegram WebApp is not available. Running in a normal browser environment.");
+                setIsLoading(false); // Stop loading if not inside Telegram WebApp
             }
         };
-    
+
         initializeTelegram();
     }, []);
 
