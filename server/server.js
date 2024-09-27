@@ -53,7 +53,7 @@ app.use(cors({
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected'))
+  .then(() => console.log('MongoDB connecteddd'))
   .catch(err => console.log(err));
 
 // Initialize the Telegram bot
@@ -82,7 +82,7 @@ bot.onText(/\/start/, (msg) => {
   });
 });
 
-console.log('Telegram bot is running...');
+console.log('Telegram bot is runninggg...');
 
 // Init routes
 app.use('', router);
@@ -90,5 +90,5 @@ app.use('', router);
 // Start the Express server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on porttt ${PORT}`);
 });
