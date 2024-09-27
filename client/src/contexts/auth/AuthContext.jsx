@@ -28,20 +28,25 @@ export const AuthProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        // Check if Telegram WebApp is available
-        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
-            const { id: telegramId, first_name: firstName, last_name: lastName } = window.Telegram.WebApp.initDataUnsafe.user || {};
-            
-            if (telegramId) {
-                initializeUser(telegramId, firstName, lastName);
+        const initializeTelegram = () => {
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.onEvent('ready', () => {
+                    const { id: telegramId, first_name: firstName, last_name: lastName } = window.Telegram.WebApp.initDataUnsafe.user || {};
+                    
+                    if (telegramId) {
+                        initializeUser(telegramId, firstName, lastName);
+                    } else {
+                        console.error("Telegram user information is not available.");
+                    }
+    
+                    setIsLoading(false); // Set loading to false after initialization
+                });
             } else {
-                console.error("Telegram user information is not available.");
+                console.error("Telegram WebApp is not available.");
             }
-        } else {
-            console.error("Telegram WebApp is not available.");
-        }
-
-        setIsLoading(false); // Set loading to false after initialization
+        };
+    
+        initializeTelegram();
     }, []);
 
     const value = { userInfo, setUserInfo };
