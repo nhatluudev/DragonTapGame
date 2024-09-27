@@ -31,8 +31,14 @@ export default function Rank() {
         return () => clearInterval(intervalId); // Cleanup on component unmount
     }, []);
 
+    // Show a loading spinner or message while data is being fetched
     if (loading) {
-        return <div>Loading leaderboard...</div>;
+        return (
+            <div className="loading">
+                <div className="loading-spinner"></div>
+                <h3>Đang tải ...</h3>
+            </div>
+        )
     }
 
     return (
@@ -53,24 +59,21 @@ export default function Rank() {
                         <div>
                             <strong className="rank__statistic-item__title">140,000</strong>
                         </div>
-                        <br />
-                        <span className="rank__statistic-item__sub-title annotation">người chơi</span>
+                        <div className="rank__statistic-item__sub-title annotation">người chơi</div>
                     </div>
                     <hr />
                     <div className="rank__statistic-item">
                         <div>
                             <strong className="rank__statistic-item__title">3,000,000</strong>
                         </div>
-                        <br />
-                        <span className="rank__statistic-item__sub-title annotation">tokens</span>
+                        <div className="rank__statistic-item__sub-title annotation">tokens</div>
                     </div>
                     <hr />
                     <div className="rank__statistic-item">
                         <div>
                             <strong className="rank__statistic-item__title">150M VND</strong>
                         </div>
-                        <br />
-                        <span className="rank__statistic-item__sub-title annotation">tiền thưởng</span>
+                        <div className="rank__statistic-item__sub-title annotation">tiền thưởng</div>
                     </div>
                 </div>
             </section >

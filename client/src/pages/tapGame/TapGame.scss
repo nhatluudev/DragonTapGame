@@ -27,8 +27,8 @@
             justify-content: center;
             align-items: center;
             margin: 40px 0;
-            width: 220px;
-            height: 220px;
+            width: 250px;
+            height: 250px;
             margin-left: 50%;
             transform: translateX(-50%);
             transition: 0.5s;
@@ -37,8 +37,6 @@
                 cursor: pointer;
                 /* 0.15s for fast flickering */
             }
-
-
 
             .tap-game__main__dragon {
                 width: 100%;
@@ -136,7 +134,7 @@
     /* Keyframe for smooth scaling and opacity effect */
     @keyframes scale-border {
         0% {
-            opacity: 0.3;
+            opacity: 0.5;
             transform: scale(0.8);
         }
 
@@ -276,7 +274,7 @@
     top: -30px;
     left: -20px;
     color: green;
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     font-weight: bold;
     opacity: 0;
     animation: showIncrement 1s forwards;

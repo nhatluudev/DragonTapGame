@@ -177,9 +177,10 @@ const TapGame = () => {
                 <div className='user'>
                     <img className='user-avatar mr-8' src={UserAvatar1} alt="Avatar" />
                     <div className="user-name">
-                        <strong className="user-name__title">{firstName} {lastName}</strong>
-                        <br />
-                        <span className="user-name__sub-title">Thành viên mới</span>
+                        <div>
+                            <strong className="user-name__title">{firstName} {lastName}</strong>
+                        </div>
+                        <div className="user-name__sub-title">Thành viên mới</div>
                     </div>
                 </div>
                 <button className="btn btn-sm btn-4">

@@ -14,9 +14,8 @@ export default function InCommunityMission() {
     const { setModalInfo } = useModal();
     const navigate = useNavigate();
     const [isCheckInCommunityLoading, setIsCheckInCommunityLoading] = useState();
+    const [inputs, setInputs] = useState({});
     const [errors, setErrors] = useState({});
-
-    const [inputs, setInputs] = useState();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -32,7 +31,7 @@ export default function InCommunityMission() {
 
         if (!isFilled(inputs.namiId)) {
             errors.namiId = "Vui lòng nhập Nami ID";
-        } else if (!inputs.namiId.toLowerCase().includes("nami") || inputs.namiId.length !== 10) {
+        } else if (!inputs.namiId.toLowerCase().includes("nami") || inputs.namiId.length !== 14) {
             errors.namiId = "Nami ID không hợp lệ";
         }
 

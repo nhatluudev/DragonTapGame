@@ -113,6 +113,7 @@ class UserController {
             // Update last login date and save the user
             user.lastLoginDate = currentDate;
             const streakRewards = UserController.getRewards(user.loginStreak);
+            user.tokens += streakRewards;
             user.streakRewards = streakRewards;
             await user.save();
 
@@ -231,12 +232,22 @@ class UserController {
             console.log(namiId)
             let user = await User.findOne({ telegramId });
             let tokensEarned = 0;
+            console.log("ABC")
 
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
 
             console.log('Checking KYC for Nami ID:', namiId);
+
+            // Check if the namiId is already associated with another user
+            const existingUserWithNamiId = await User.findOne({ namiId });
+            if (existingUserWithNamiId && existingUserWithNamiId.telegramId !== telegramId) {
+                // If another user already has this namiId, return an error
+                return res.status(400).json({
+                    message: 'Nami ID này đã được sử dụng bởi một người chơi khác',
+                });
+            }
 
             // Call the helper function to check KYC and community status
             const memberStatus = await this.checkMemberInNamiCommunity(namiId);
@@ -246,6 +257,7 @@ class UserController {
             if (!user.isInCommunity && memberStatus.isInCommunity) {
                 user.isInCommunity = true;
                 tokensEarned += 10000;
+                user.namiId = namiId;
             }
 
             // Check if users have not finished the Join T2Capital Mission
@@ -266,7 +278,7 @@ class UserController {
             });
         } catch (error) {
             console.error('Error in checkKyc:', error);
-            return res.status(500).json({ message: 'Server error' });
+            return res.status(500).json({ message });
         }
     };
 

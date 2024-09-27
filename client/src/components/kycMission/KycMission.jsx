@@ -6,6 +6,7 @@ import "./KycMission.scss";
 import { apiUtils } from "../../utils/newRequest";
 import { useAuth } from "../../contexts/auth/AuthContext";
 import { useModal } from "../../contexts/modal/ModalContext";
+import { isFilled } from "../../utils/validator";
 
 
 export default function KycMission() {
@@ -13,16 +14,44 @@ export default function KycMission() {
     const { setModalInfo } = useModal();
     const navigate = useNavigate();
 
-    const [namiId, setNamiId] = useState();
+    const [isCheckKycLoading, setIsCheckKycLoading] = useState();
+    const [inputs, setInputs] = useState({});
+    const [errors, setErrors] = useState({});
 
     const handleChange = (e) => {
-        setNamiId(e.target.value);
+        const { name, value } = e.target;
+        setInputs((prevState) => ({
+            ...prevState,
+            [name]: value
+        }));
+        setErrors((values) => ({ ...values, [name]: '' }));
+    }
+
+    const validateInputs = () => {
+        let errors = {};
+
+        if (!isFilled(inputs.namiId)) {
+            errors.namiId = "Vui lòng nhập Nami ID";
+        } else if (!inputs.namiId.toLowerCase().includes("nami") || inputs.namiId.length !== 14) {
+            errors.namiId = "Nami ID không hợp lệ";
+        }
+
+        return errors;
     }
 
     // Function to handle claiming the daily login reward
     const handleSubmit = async () => {
+
+        setIsCheckKycLoading(true);
+        const validationErrors = validateInputs();
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            setIsCheckKycLoading(false);
+            return;
+        }
+
         try {
-            const response = await apiUtils.post(`/users/checkMemberStatus`, { namiId, telegramId: userInfo.telegramId });
+            const response = await apiUtils.post(`/users/checkMemberStatus`, { namiId: inputs.namiId, telegramId: userInfo.telegramId });
             console.log(response)
             if (response.data.isInCommunity && response.data.isKyc) {
                 setModalInfo({
@@ -38,16 +67,26 @@ export default function KycMission() {
                 })
             }
         } catch (error) {
+            console.log(error.response)
             setModalInfo({
                 status: "error",
                 message: error.response.data.message || "Có lỗi xảy ra"
             })
             // console.error("Error claiming login reward:", error);
+        } finally {
+            setIsCheckKycLoading(false);
         }
     };
 
+    const handleOverlayClick = (e) => {
+        if (e.target.classList.contains("overlay")) {
+            navigate("/missions");
+        }
+    };
+
+
     return (
-        <div className="overlay">
+        <div className="overlay" onClick={handleOverlayClick}>
             <div className="modal-form type-1 kyc-mission">
                 <h3 className="form__title">Hoàn thành KYC</h3>
                 <div onClick={() => navigate("/missions")}>
@@ -55,8 +94,7 @@ export default function KycMission() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                     </svg>
                 </div>
-                <br />
-                <div className="annotation">
+                <div className="annotation mt-12">
                     Nhập Nami ID của bạn để hệ thống kiểm tra.
                 </div>
                 <div className="annotation">
@@ -64,11 +102,21 @@ export default function KycMission() {
                 </div>
 
                 <div className="form-field">
-                    <input type="text" onChange={handleChange} placeholder="Nhập Nami ID của bạn" className="form-field__input" />
+                    <input type="text" name="namiId" onChange={handleChange} placeholder="Nhập Nami ID của bạn" className="form-field__input" />
+                    {errors?.namiId && <div className="form-field__error">{errors?.namiId}</div>}
                 </div>
 
-                <button className="btn btn-lg btn-4 w-100" onClick={handleSubmit}>
-                    Xác nhận
+                <button
+                    type="submit"
+                    className="btn btn-lg btn-4 w-100"
+                    onClick={handleSubmit}
+                    disabled={isCheckKycLoading}
+                >
+                    {isCheckKycLoading ? (
+                        <span className="btn-spinner"></span>
+                    ) : (
+                        "Xác nhận"
+                    )}
                 </button>
             </div>
         </div>

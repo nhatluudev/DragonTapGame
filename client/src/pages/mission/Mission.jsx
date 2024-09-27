@@ -24,6 +24,7 @@ export default function Mission() {
     const [checkInMessage, setCheckInMessage] = useState('');
     const [isTenMinuteCheckInLoading, setIsTenMinuteCheckInLoading] = useState(false);
     const [hasLoggedInToday, setHasLoggedInToday] = useState(false); // Tracks if the user already logged in
+    const [isLoading, setIsLoading] = useState(true);
 
     // Destructure properties from userInfo safely
     const {
@@ -46,6 +47,9 @@ export default function Mission() {
         }
     }, [userInfo]);
 
+
+
+
     useEffect(() => {
         // On page load, check the last check-in status from the server
         const checkTenMinCheckInStatus = async () => {
@@ -66,16 +70,37 @@ export default function Mission() {
         }
     }, [telegramId]);
 
+
     // Function to check if the user has already logged in today
+    // Function to check the login status
     const checkLoginStatus = async () => {
         try {
             const response = await apiUtils.get(`/users/checkLoginStatus/${userInfo?.telegramId}`);
-            console.log(response.data)
             setHasLoggedInToday(response.data.hasLoggedInToday);
         } catch (error) {
             console.error("Error checking login status:", error);
         }
     };
+
+    // Function to check the check-in status
+    const checkTenMinCheckInStatus = async () => {
+        try {
+            const response = await apiUtils.get(`/users/tenMinCheckInStatus/${telegramId}`);
+            const { canCheckIn, remainingTime } = response.data;
+            setCanCheckIn(canCheckIn); // Update check-in button state
+            setCheckInCooldown(remainingTime * 60); // Set cooldown (in seconds)
+        } catch (error) {
+            console.error("Error fetching check-in status:", error);
+        }
+    };
+
+    // Update loginStreak and streakRewards when userInfo becomes available
+    useEffect(() => {
+        if (userInfo) {
+            checkLoginStatus();
+        }
+    }, [userInfo]);
+
 
     useEffect(() => {
         // If cooldown time is set, start a timeout to reset canCheckIn after 10 minutes
@@ -98,7 +123,7 @@ export default function Mission() {
 
             setModalInfo({
                 status: "success",
-                message: "Successfully checked in"
+                message: "Ghi danh thành công"
             });
             setUserInfo({ ...userInfo, ...userInfoAfterCheckIn });
             setUserTokens(userInfoAfterCheckIn.tokens);
@@ -122,6 +147,27 @@ export default function Mission() {
         }
     };
 
+    // Fetch all essential data before rendering
+    useEffect(() => {
+        const fetchEssentialData = async () => {
+            if (telegramId) {
+                await Promise.all([checkLoginStatus(), checkTenMinCheckInStatus()]);
+                setIsLoading(false); // Set loading to false after data fetch is complete
+            }
+        };
+        fetchEssentialData();
+    }, [telegramId]);
+
+    // Show a loading spinner or message while data is being fetched
+    if (isLoading) {
+        return (
+            <div className="loading">
+                <div className="loading-spinner"></div>
+                <h3>Đang tải ...</h3>
+            </div>
+        )
+    }
+
     return (
         <div className="mission">
             <section className="header flex-justify-center flex-align-center mb-20">
@@ -143,16 +189,17 @@ export default function Mission() {
                         <div className="mission-item--left">
                             <img src={CalendarIcon} alt="" className="mission-item__ic" />
                             <div>
-                                <strong className="mission-item__title">
-                                    Điểm danh hằng ngày
-                                </strong>
-                                <br />
+                                <div>
+                                    <strong className="mission-item__title">
+                                        Điểm danh hằng ngày
+                                    </strong>
+                                </div>
                                 <span className="mission-item__sub-title flex-align-center"><img src={TokenIcon} className="token-ic sm mr-4" /> +5,000</span>
                             </div>
                         </div>
                         <div className="mission-item--right">
-                            <button className={`btn btn-sm ${hasLoggedInToday ? 'btn-4' : 'btn-3'}`}>
-                                {hasLoggedInToday ? 'Thực hiện' : `Đã nhận`}
+                            <button className={`btn btn-sm ${!hasLoggedInToday ? 'btn-4' : 'btn-5'}`}>
+                                {!hasLoggedInToday ? 'Thực hiện' : `Đã nhận`}
                             </button>
                         </div>
                     </Link>
@@ -161,15 +208,16 @@ export default function Mission() {
                         <div className="mission-item--left">
                             <img src={AttendanceIcon} alt="" className="mission-item__ic" />
                             <div>
-                                <strong className="mission-item__title">Ghi danh 10 phút 1 lần</strong>
-                                <br />
+                                <div>
+                                    <strong className="mission-item__title">Ghi danh 10 phút 1 lần</strong>
+                                </div>
                                 <span className="mission-item__sub-title flex-align-center">
                                     <img src={TokenIcon} className="token-ic sm mr-4" /> +1,000
                                 </span>
                             </div>
                         </div>
                         <div className="mission-item--right">
-                            <button className={`btn btn-sm ${canCheckIn ? 'btn-4' : 'btn-3'}`} disabled={!canCheckIn}>
+                            <button className={`btn btn-sm ${canCheckIn ? 'btn-4' : 'btn-5'}`} disabled={!canCheckIn}>
                                 {canCheckIn ? 'Thực hiện' : `Đã nhận`}
                             </button>
                         </div>
@@ -191,10 +239,11 @@ export default function Mission() {
                         <div className="mission-item--left">
                             <img src={NamiIcon} alt="" className="mission-item__ic" />
                             <div>
-                                <strong className="mission-item__title">
-                                    Download Nami app
-                                </strong>
-                                <br />
+                                <div>
+                                    <strong className="mission-item__title">
+                                        Download Nami app
+                                    </strong>
+                                </div>
                                 <span className="mission-item__sub-title flex-align-center"><img src={TokenIcon} className="token-ic sm mr-8" /> +5,000</span>
                             </div>
                         </div>
@@ -202,7 +251,7 @@ export default function Mission() {
                             <div className="mission-item--right">
                                 {
                                     userInfo?.isInCommunity ? (
-                                        <button className="btn btn-sm btn-3">Đã nhận</button>
+                                        <button className="btn btn-sm btn-5">Đã nhận</button>
                                     ) : (
                                         <button className="btn btn-sm btn-4">Thực hiện</button>
                                     )
@@ -215,17 +264,18 @@ export default function Mission() {
                         <div className="mission-item--left">
                             <img src={NamiKycIcon} alt="" className="mission-item__ic" />
                             <div>
-                                <strong className="mission-item__title">
-                                    Hoàn tất KYC tài khoản Nami
-                                </strong>
-                                <br />
+                                <div>
+                                    <strong className="mission-item__title">
+                                        Hoàn tất KYC tài khoản Nami
+                                    </strong>
+                                </div>
                                 <span className="mission-item__sub-title flex-align-center"><img src={TokenIcon} className="token-ic sm mr-8" /> +1,000</span>
                             </div>
                         </div>
                         <div className="mission-item--right">
                             {
                                 userInfo?.isKyc ? (
-                                    <button className="btn btn-sm btn-3">Đã nhận</button>
+                                    <button className="btn btn-sm btn-5">Đã nhận</button>
                                 ) : (
                                     <button className="btn btn-sm btn-4">Thực hiện</button>
                                 )
@@ -249,15 +299,16 @@ export default function Mission() {
                         <div className="mission-item--left">
                             <img src={FacebookIcon} alt="" className="mission-item__ic" />
                             <div>
-                                <strong className="mission-item__title">
-                                    Điểm danh hằng ngày
-                                </strong>
-                                <br />
+                                <div>
+                                    <strong className="mission-item__title">
+                                        Điểm danh hằng ngày
+                                    </strong>
+                                </div>
                                 <span className="mission-item__sub-title flex-align-center"><img src={TokenIcon} className="token-ic sm mr-4" /> +5,000</span>
                             </div>
                         </div>
                         <div className="mission-item--right">
-                            <button className={`btn btn-sm ${hasLoggedInToday ? 'btn-4' : 'btn-3'}`}>
+                            <button className={`btn btn-sm ${hasLoggedInToday ? 'btn-4' : 'btn-5'}`}>
                                 {hasLoggedInToday ? 'Thực hiện' : `Đã nhận`}
                             </button>
                         </div>
@@ -267,15 +318,16 @@ export default function Mission() {
                         <div className="mission-item--left">
                             <img src={TelegramIcon} alt="" className="mission-item__ic" />
                             <div>
-                                <strong className="mission-item__title">Ghi danh 10 phút 1 lần</strong>
-                                <br />
+                                <div>
+                                    <strong className="mission-item__title">Ghi danh 10 phút 1 lần</strong>
+                                </div>
                                 <span className="mission-item__sub-title flex-align-center">
                                     <img src={TokenIcon} className="token-ic sm mr-4" /> +1,000
                                 </span>
                             </div>
                         </div>
                         <div className="mission-item--right">
-                            <button className={`btn btn-sm ${canCheckIn ? 'btn-4' : 'btn-3'}`} disabled={!canCheckIn}>
+                            <button className={`btn btn-sm ${canCheckIn ? 'btn-4' : 'btn-5'}`} disabled={!canCheckIn}>
                                 {canCheckIn ? 'Thực hiện' : `Đã nhận`}
                             </button>
                         </div>

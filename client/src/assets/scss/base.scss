@@ -3,7 +3,7 @@
 :root {
     --gray-color: #B6B1B1;
     --gray-2-color: #4a4a4a;
-    --gray-3-color: #1c1c1c;
+    --gray-3-color: #212121;
     --white-color: white;
     --highlight-red-color: rgb(254, 56, 56);
     --highlight-green-color: #30AD5B;
@@ -141,7 +141,7 @@ h4 {
 }
 
 p {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     line-height: 2rem;
     width: 100%;
 }
@@ -527,6 +527,8 @@ img {
     justify-content: center;
     color: var(--white-color);
     font-weight: 600;
+    font-size: 1.6rem;
+    font-weight: bold;
 
     &:hover {
         opacity: 0.9;
@@ -547,8 +549,8 @@ img {
     }
 
     &.btn-lg {
-        border-radius: 20px;
-        padding: 12px 16px;
+        border-radius: 26px;
+        padding: 16px 16px;
         min-width: 180px;
     }
 
@@ -562,11 +564,16 @@ img {
         background-image: linear-gradient(45deg, #2b9872, #28a276, #6be88f);
         box-shadow: rgb(2 115 71 / 20%) 0px 7px 29px 0px;
     }
+
+
+    &.btn-5 {
+        background-color: var(--gray-2-color);
+    }
 }
 
 section {
     background-color: var(--overlay-bg-color);
-    border-radius: 20px;
+    border-radius: 24px;
     padding: 12px 16px;
 
     .section__title {
@@ -604,7 +611,7 @@ section {
 
 .annotation {
     color: var(--gray-color);
-    font-size: 1.2rem !important;
+    font-size: 1.3rem !important;
     text-align: center;
 }
 
@@ -620,8 +627,8 @@ section {
 .modal-form {
     position: absolute;
     width: calc(100% - 56px);
-    background: #0e0e0e;
-    min-height: 25%;
+    background: #151515;
+    min-height: 30%;
     padding: 20px 20px 28px;
     margin: 40px 28px;
     border-radius: 16px;
@@ -630,7 +637,7 @@ section {
 .form-field {
     .form-field__input {
         width: 100%;
-        padding: 10px 12px;
+        padding: 16px 12px;
         border: none;
         border-radius: 20px;
         background-color: var(--gray-3-color);
@@ -638,6 +645,7 @@ section {
         transition: all 0.2s ease-in-out;
         margin: 12px 0 16px;
         text-align: center;
+        font-size: 1.6rem;
     }
 
     .form-field__error {
@@ -648,7 +656,7 @@ section {
 }
 
 .form__title {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -660,6 +668,8 @@ section {
     top: 22px;
     right: 20px;
     stroke-width: 2;
+    width: 24px;
+    height: 24px;
 
     &:hover {
         opacity: 0.8;
@@ -672,6 +682,8 @@ section {
     top: 22px;
     left: 20px;
     stroke-width: 2;
+    width: 24px;
+    height: 24px;
 
     &:hover {
         opacity: 0.8;
@@ -698,4 +710,49 @@ section {
     border-top-color: rgba(255, 255, 255, 1);
     border-radius: 50%;
     animation: spin 0.6s linear infinite;
+}
+
+.loading {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 50%;
+
+    h3 {
+        margin-top: 70px;
+    }
+
+    // transform: translate(-50%, -50%);
+    // margin-left: calc(50% - 28px);
+    // margin-top: 50%;
+
+    .loading-spinner {
+        position: absolute;
+        border: 8px solid rgba(255, 255, 255, 0.9);
+        border-top: 8px solid #2fd9a9;
+        /* Blue color for the spinner */
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+        /* Animation for the spinning effect */
+    }
+
+    // .loading-spinner {
+    //     transform: translate(-50%, -50%);
+    //     margin-left: calc(50% - 28px);
+    //     margin-top: 50%;
+    // }
+}
+
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
