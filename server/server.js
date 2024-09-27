@@ -19,8 +19,18 @@ app.use(cors({
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.log(err));
+  .then(() => {
+    console.log('MongoDB connected');
+
+    // Initialize the Telegram bot AFTER MongoDB is connected
+    import('./bot/telegram.js').then(({ default: bot }) => {
+      console.log('Telegram bot initialized');
+      // You can add any further bot setup if needed
+    }).catch((err) => {
+      console.error('Error initializing Telegram bot:', err);
+    });
+  })
+  .catch(err => console.log('MongoDB connection error:', err));
 
 // Init routes
 app.use('', router)
