@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
         setIsLoading(true); // Set loading to true when initialization starts
 
         const initializeTelegram = () => {
-            console.log(window.Telegram.WebApp)
+            // console.log(window.Telegram.WebApp)
             if (window.Telegram && window.Telegram.WebApp) {
                 window.Telegram.WebApp.onEvent('ready', () => {
                     const { id: telegramId, first_name: firstName, last_name: lastName } = window.Telegram.WebApp.initDataUnsafe.user || {};
