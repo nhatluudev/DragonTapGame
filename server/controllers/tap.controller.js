@@ -4,14 +4,19 @@ class TapController {
     // Tap logic remains the same as before...
     tap = async (req, res, next) => {
         try {
-            const { telegramId, firstName, lastName } = req.body;
+            const { telegramId, firstName, lastName, tapCount } = req.body;
             let user = await User.findOne({ telegramId });
 
             if (!user) {
                 user = new User({ telegramId, firstName, lastName, tokens: 1 });
                 await user.save();
             } else {
-                user.tokens += 1;
+
+                if (tapCount) {
+                    user.tokens += tapCount;
+                } else {
+                    user.tokens += 1;
+                }
                 await user.save();
             }
 

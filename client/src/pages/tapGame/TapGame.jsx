@@ -44,6 +44,8 @@ const TapGame = () => {
         return () => clearInterval(energyRegenInterval);
     }, []);
 
+
+
     const processTap = async () => {
         if (tapQueue.length === 0 || isProcessing || energyCount <= 0) return;
 
@@ -70,25 +72,34 @@ const TapGame = () => {
         }
     };
 
+    // useEffect(() => {
+    //     if (tapQueue.length > 0 && !isProcessing) {
+    //         processTap();
+    //     }
+    // }, [tapQueue, isProcessing]);
+
     useEffect(() => {
-        if (tapQueue.length > 0 && !isProcessing) {
-            processTap();
-        }
+        return () => {
+            // Process any remaining taps before unmount
+            while (tapQueue.length > 0) {
+                processTap();
+            }
+        };
     }, [tapQueue, isProcessing]);
 
+
     // Function to handle tapping
+    const [accumulatedTaps, setAccumulatedTaps] = useState(0); // Accumulated taps
+
     const handleTap = () => {
         if (energyCount > 0) {
-            // Add the current tap to the queue
-            setTapQueue(prevQueue => [
-                ...prevQueue,
-                { telegramId, firstName, lastName },
-            ]);
+            // Increase accumulated taps by 1
+            setAccumulatedTaps(prevTaps => prevTaps + 1);
 
             // Optimistically increase tokens immediately for better UX
             setUserTokens(prevTokens => prevTokens + 1);
 
-            // Add a +1 animation to the queue
+            // Add a +1 animation
             setIncrementAnimations(prev => [...prev, '+1']);
 
             // Decrease energy count
@@ -121,11 +132,40 @@ const TapGame = () => {
     };
 
     useEffect(() => {
+        let batchTimeout;
+
+        if (accumulatedTaps > 0) {
+            // Set a timeout to send the batch to the server after 1 second of inactivity
+            batchTimeout = setTimeout(async () => {
+                try {
+                    // Send the accumulated taps to the backend in one request
+                    await apiUtils.post("/taps/tap", {
+                        telegramId,
+                        firstName,
+                        lastName,
+                        tapCount: accumulatedTaps, // Send the total accumulated taps
+                    });
+
+                    console.log(`Successfully processed ${accumulatedTaps} taps`);
+                } catch (error) {
+                    console.error("Error during batch tap processing:", error);
+                } finally {
+                    // Reset the accumulated taps after processing
+                    setAccumulatedTaps(0);
+                    setUserInfo({ ...userInfo, tokens: userInfo.tokens + accumulatedTaps })
+                }
+            }, 300); // 1 second delay to batch taps
+        }
+
+        return () => clearTimeout(batchTimeout); // Clean up timeout if the user taps again before it triggers
+    }, [accumulatedTaps, telegramId, firstName, lastName]);
+
+    useEffect(() => {
         if (incrementAnimations.length > 0) {
             // Remove each animation after 1 second
             const timer = setTimeout(() => {
                 setIncrementAnimations(prev => prev.slice(1));
-            }, 1000);
+            }, 300);
 
             return () => clearTimeout(timer);
         }

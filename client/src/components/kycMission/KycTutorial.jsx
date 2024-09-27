@@ -11,45 +11,7 @@ import { useAuth } from "../../contexts/auth/AuthContext";
 
 export default function KycTutorial() {
     const { userInfo } = useAuth();
-    const [loginStreak, setLoginStreak] = useState(0); // Default to 0 if userInfo isn't ready
-    const loginStreakRewards = [500, 1000, 2500, 5000, 15000, 25000, 50000, 80000, 200000];
-    const [hasLoggedInToday, setHasLoggedInToday] = useState(false); // Tracks if the user already logged in
-    const [rewardMessage, setRewardMessage] = useState(""); // To show reward message after claiming
     const navigate = useNavigate();
-
-    // Update loginStreak and streakRewards when userInfo becomes available
-    useEffect(() => {
-        if (userInfo) {
-            setLoginStreak(userInfo.loginStreak || 0);
-            checkLoginStatus();
-        }
-    }, [userInfo]);
-
-    // Function to check if the user has already logged in today
-    const checkLoginStatus = async () => {
-        try {
-            const response = await apiUtils.get(`/users/checkLoginStatus/${userInfo?.telegramId}`);
-            console.log(response.data)
-            setHasLoggedInToday(response.data.hasLoggedInToday);
-        } catch (error) {
-            console.error("Error checking login status:", error);
-        }
-    };
-
-    // Function to handle claiming the daily login reward
-    const handleLoginReward = async () => {
-        try {
-            const response = await apiUtils.post(`/users/getLoginReward`, { telegramId: userInfo?.telegramId });
-
-            if (response.data.success) {
-                setLoginStreak(response.data.loginStreak); // Update login streak
-                setRewardMessage(`Đã nhận ${response.data.reward} tokens!`);
-                setHasLoggedInToday(true); // Set to true so the user can't claim twice
-            }
-        } catch (error) {
-            console.error("Error claiming login reward:", error);
-        }
-    };
 
     return (
         <div className="overlay">

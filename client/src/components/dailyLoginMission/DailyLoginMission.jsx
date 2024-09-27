@@ -59,7 +59,6 @@ export default function DailyLoginMission() {
     return (
         <div className="overlay">
             <div className="modal-form type-1 daily-login-mission">
-
                 <h3 className="form__title">Điểm danh hằng ngày</h3>
                 <div onClick={() => navigate("/missions")}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-6 form__close-ic">

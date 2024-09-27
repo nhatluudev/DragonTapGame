@@ -91,13 +91,12 @@ export default function InCommunityMission() {
                     Nhập Nami ID của bạn để hệ thống kiểm tra.
                 </div>
                 <div className="annotation">
-                    <Link to="/missions/check-kyc/kyc-tutorial" className="highlight-text green underlined">Xem hướng dẫn</Link>
+                    <Link to="/missions/check-in-community/check-in-community-tutorial" className="highlight-text green underlined">Xem hướng dẫn</Link>
                 </div>
 
                 <div className="form-field">
                     <input type="text" name="namiId" onChange={handleChange} placeholder="Nhập Nami ID của bạn" className="form-field__input" />
                     {errors?.namiId && <div className="form-field__error">{errors?.namiId}</div>}
-
                 </div>
 
                 <button

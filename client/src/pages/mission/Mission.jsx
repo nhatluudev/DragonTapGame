@@ -188,7 +188,6 @@ export default function Mission() {
 
                 <div className="mission-container">
                     <Link to="/missions/check-in-community" className="mission-item">
-
                         <div className="mission-item--left">
                             <img src={NamiIcon} alt="" className="mission-item__ic" />
                             <div>

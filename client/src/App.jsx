@@ -9,6 +9,7 @@ import DailyLoginMission from "./components/dailyLoginMission/DailyLoginMission.
 import KycMission from "./components/kycMission/KycMission.jsx";
 import KycTutorial from "./components/kycMission/KycTutorial.jsx";
 import InCommunityMission from "./components/InCommunityMission/InCommunityMission.jsx";
+import InCommunityTutorial from "./components/InCommunityMission/InCommunityTutorial.jsx";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,10 @@ const routes = [
           {
             path: "check-in-community",
             element: <InCommunityMission />,
+          },
+          {
+            path: "check-in-community/check-in-community-tutorial",
+            element: <InCommunityTutorial />,
           }
         ]
       },
