@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
     const initializeUser = async (telegramId, firstName, lastName) => {
         try {
             const url = `/users/createOrFetchUser`;
+            console.log(telegramId, firstName, lastName)
             const response = await apiUtils.post(url, { telegramId, firstName, lastName });
             console.log(response.data.userInfo);
             setUserInfo(response.data.userInfo); // Store the user info
