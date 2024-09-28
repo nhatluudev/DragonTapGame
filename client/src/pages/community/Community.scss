@@ -10,8 +10,26 @@
         padding: 8px 32px 40px;
         height: 100%;
 
+        .community__main__ic {
+            margin-top: 16px;
+            width: 80px;
+            height: 80px;
+            margin-left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--gray-3-color);
+            border-radius: 16px;
+
+            img {
+                width: 50px;
+                height: 60px;
+                margin-left: 50%;
+                margin-top: 50%;
+                transform: translate(-50%, -50%);
+            }
+        }
+
         hr {
-            margin: 32px auto;
+            margin: 24px auto;
             width: 60px;
             height: 1px;
             background-color: var(--gray-color);

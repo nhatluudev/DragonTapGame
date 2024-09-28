@@ -46,13 +46,16 @@
                 }
             }
 
-            th, td {
+            th,
+            td {
                 padding: 8px 0;
             }
 
             img {
                 height: 24px;
                 width: unset;
+                margin-left: 50%;
+                transform: translateX(-50%);
             }
         }
     }

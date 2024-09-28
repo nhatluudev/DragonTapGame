@@ -58,7 +58,7 @@ class UserController {
             }
 
             await user.save();
-            user.streakRewards = UserController.getRewards(user.loginStreak);
+            user.streakRewards = UserController.getRewardForDay(user.loginStreak);
 
             return res.json({ userInfo: user });
         } catch (error) {
@@ -112,15 +112,15 @@ class UserController {
 
             // Update last login date and save the user
             user.lastLoginDate = currentDate;
-            const streakRewards = UserController.getRewards(user.loginStreak);
-            user.tokens += streakRewards;
-            user.streakRewards = streakRewards;
+            const currentReward = UserController.getRewardForDay(user.loginStreak); // Get reward for the current streak day
+            user.tokens += currentReward; // Add reward to user tokens
+            user.streakRewards = currentReward;
             await user.save();
 
             return res.json({
                 success: true,
                 loginStreak: user.loginStreak,
-                reward: streakRewards[user.loginStreak - 1] || 0, // Get reward for the current day
+                reward: currentReward || 0, // Get reward for the current day
             });
         } catch (error) {
             console.error(error);
@@ -128,11 +128,12 @@ class UserController {
         }
     };
 
-    // Function to get rewards based on the login streak
-    static getRewards(streak) {
+    // Function to get the reward for the current day
+    static getRewardForDay(streak) {
         const rewards = [500, 1000, 2500, 5000, 15000, 25000, 50000, 80000, 200000]; // Example rewards
-        return rewards.slice(0, streak); // Return the rewards based on the streak
+        return rewards[streak - 1] || rewards[rewards.length - 1]; // Return reward for the current streak day or cap at the max reward
     }
+
 
     // Get last 10-minute check-in status
     getTenMinCheckInStatus = async (req, res) => {
@@ -215,8 +216,19 @@ class UserController {
     // Fetch leaderboard for users, sorted by tokens in descending order
     getLeaderboard = async (req, res) => {
         try {
-            const users = await User.find().sort({ tokens: -1 }).limit(10); // Fetch top 100 users
-            return res.json({ leaderboard: users });
+            // Run both queries in parallel
+            const [users, totalUsers] = await Promise.all([
+                User.find().sort({ tokens: -1 }).limit(10),
+                User.countDocuments()
+            ]);
+
+            console.log(users);
+            console.log(`Total Users: ${totalUsers}`);
+
+            return res.json({
+                leaderboard: users,
+                totalUsers: totalUsers // Return totalUsers in the response
+            });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ message: 'Server error' });

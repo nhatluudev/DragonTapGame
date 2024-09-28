@@ -6,6 +6,7 @@ dotenv.config();
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
 bot.onText(/\/start/, (msg) => {
+    console.log("FUCKINGSHIT")
     console.log("TELEGRAM USER DATA")
     const chatId = msg.chat.id;
     const username = msg.from.username || 'Guest';

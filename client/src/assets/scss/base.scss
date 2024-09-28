@@ -489,11 +489,13 @@ img {
     }
 
     .user-name {
-        .user-name__title {}
+        .user-name__title {
+            font-size: 1.6rem;
+        }
 
         .user-name__sub-title {
             color: var(--gray-color);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
     }
 }
@@ -538,7 +540,7 @@ img {
     &.btn-sm {
         border-radius: 14px;
         min-width: 60px;
-        padding: 4px 8px;
+        padding: 6px 8px;
         font-size: 1.3rem;
     }
 
@@ -550,7 +552,7 @@ img {
 
     &.btn-lg {
         border-radius: 26px;
-        padding: 16px 16px;
+        padding: 12px 16px;
         min-width: 180px;
     }
 

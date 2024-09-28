@@ -6,17 +6,21 @@ import SecondPrizeIcon from "../../assets/img/second-prize.png";
 import ThirdPrizeIcon from "../../assets/img/third-prize.png";
 import './Rank.scss';
 import { apiUtils } from '../../utils/newRequest';
+import { formatFloat } from '../../utils/formatter';
 
 export default function Rank() {
     const [leaderboard, setLeaderboard] = useState([]);
+    const [totalUsers, setTotalUsers] = useState(16000);
     const [loading, setLoading] = useState(true);
-
+    
     useEffect(() => {
         // Function to fetch the leaderboard data from the server
         const fetchLeaderboard = async () => {
             try {
                 const response = await apiUtils.get('/users/leaderboard');
+                console.log(response.data)
                 setLeaderboard(response.data.leaderboard);
+                setTotalUsers(response.data.totalUsers);
             } catch (error) {
                 console.error('Error fetching leaderboard:', error);
             } finally {
@@ -57,7 +61,7 @@ export default function Rank() {
                 <div className="rank__statistic-container">
                     <div className="rank__statistic-item">
                         <div>
-                            <strong className="rank__statistic-item__title">140,000</strong>
+                            <strong className="rank__statistic-item__title">{formatFloat(totalUsers + 1842)}</strong>
                         </div>
                         <div className="rank__statistic-item__sub-title annotation">người chơi</div>
                     </div>
@@ -89,7 +93,7 @@ export default function Rank() {
                         </tr>
                     </thead>
                     <tbody>
-                        {leaderboard.map((player, index) => (
+                        {leaderboard?.map((player, index) => (
                             <tr key={index}>
                                 <td>
                                     {index === 0 ? <img src={FirstPrizeIcon} alt="" />
@@ -105,7 +109,7 @@ export default function Rank() {
                     </tbody>
                 </table>
 
-                <p className="annotation text-align-center">140.000+ người chơi khác cũng đang leo BXH DragonTap</p>
+                <p className="annotation text-align-center">{formatFloat(totalUsers + 1842)}+ người chơi khác cũng đang leo BXH DragonTap</p>
             </section>
         </div>
     );

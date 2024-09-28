@@ -47,7 +47,7 @@ export default function DailyLoginMission() {
                     message: `Đã nhận ${response.data.reward} tokens`
                 })
                 setUserInfo({
-                    ...userInfo, loginStreak: response.data.loginStreak
+                    ...userInfo, loginStreak: response.data.loginStreak, tokens: userInfo.tokens + response.data.reward
                 })
                 setHasLoggedInToday(true); // Set to true so the user can't claim twice
             }

@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
     lastTenMinCheckIn: { type: Date, default: null }, // For the 10-minute mission
     isInCommunity: { type: Boolean, default: false },
     isKyc: { type: Boolean, default: false },
-    namiId: { type: Boolean, default: "" },
+    namiId: { type: String, default: "" },
 });
 
 const User = mongoose.model('User', userSchema);

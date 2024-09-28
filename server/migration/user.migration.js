@@ -1,79 +1,52 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import User from '../models/user.model.js'; // Adjust the path to your User model
-import { nanoid } from 'nanoid'; // Ensure to install nanoid for generating unique codes
 
 dotenv.config();
 
 // Connect to MongoDB
-const generateUniqueReferralCode = async () => {
-  let unique = false;
-  let referralCode = '';
-
-  // Loop until we generate a truly unique referral code
-  while (!unique) {
-    referralCode = nanoid(8); // Generate an 8-character code
-    const existingUser = await User.findOne({ referralCode });
-    if (!existingUser) {
-      unique = true;
-    }
-  }
-
-  return referralCode;
-};
-
-const migrateReferralCodes = async () => {
+const updateUserDefaults = async () => {
   try {
-    // Find all users with a null or missing referralCode
-    const usersWithoutReferralCode = await User.find({ referralCode: null });
+    // Find all users (no conditions to filter based on missing fields)
+    const usersToUpdate = await User.find({});
 
-    for (const user of usersWithoutReferralCode) {
-      user.referralCode = await generateUniqueReferralCode();
-      await user.save();
-      console.log(`Updated referralCode for user: ${user.telegramId}`);
-    }
-
-    console.log('Migration for users with null referralCode completed.');
-  } catch (error) {
-    console.error('Error during migration:', error);
-  }
-};
-
-const fixDuplicateReferralCodes = async () => {
-  try {
-    // Find all users and group by referralCode
-    const usersWithReferralCodes = await User.aggregate([
-      { $group: { _id: "$referralCode", count: { $sum: 1 }, users: { $push: "$_id" } } },
-      { $match: { count: { $gt: 1 } } } // Only find duplicates
-    ]);
-
-    for (const duplicate of usersWithReferralCodes) {
-      const { users } = duplicate;
-      // Skip the first user (keep its referralCode intact) and regenerate referralCode for others
-      for (let i = 1; i < users.length; i++) {
-        const userId = users[i];
-        const user = await User.findById(userId);
-        user.referralCode = await generateUniqueReferralCode();
-        await user.save();
-        console.log(`Updated duplicate referralCode for user: ${user.telegramId}`);
+    for (const user of usersToUpdate) {
+      // Set the default values if they are missing
+      if (user.lastTenMinCheckIn === undefined || user.lastTenMinCheckIn === null) {
+        user.lastTenMinCheckIn = null;
       }
+      if (user.isInCommunity === undefined || user.isInCommunity === null) {
+        user.isInCommunity = false;
+      }
+      if (user.isKyc === undefined || user.isKyc === null) {
+        user.isKyc = false;
+      }
+      if (user.namiId === undefined || user.namiId === null) {
+        user.namiId = "";
+      }
+
+      // Set tokens to 1000 for all users
+      user.tokens = 1000;
+
+      // Save the updated user
+      await user.save();
+      console.log(`Updated user: ${user._id}`);
     }
 
-    console.log('Migration for duplicate referralCode completed.');
+    console.log('User defaults migration completed.');
   } catch (error) {
-    console.error('Error during duplicate referralCode migration:', error);
+    console.error('Error during user defaults migration:', error);
   }
 };
 
 // Migration entry point
 const runMigration = async () => {
-  await mongoose.connect('mongodb://localhost:27017/your-db-name', {
+  await mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
 
-  await migrateReferralCodes();
-  await fixDuplicateReferralCodes();
+  await updateUserDefaults();
 
   console.log('All migrations completed.');
   mongoose.disconnect();

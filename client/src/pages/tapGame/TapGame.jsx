@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useAuth } from '../../contexts/auth/AuthContext.jsx';
 import { apiUtils } from '../../utils/newRequest';
 
@@ -171,6 +171,16 @@ const TapGame = () => {
         }
     }, [incrementAnimations]);
 
+    // Show a loading spinner or message while data is being fetched
+    if (!userInfo) {
+        return (
+            <div className="loading">
+                <div className="loading-spinner"></div>
+                <h3>Đang tải ...</h3>
+            </div>
+        )
+    }
+
     return (
         <div className='tap-game'>
             <section className="header flex-justify-space-between mb-20">
@@ -180,15 +190,16 @@ const TapGame = () => {
                         <div>
                             <strong className="user-name__title">{firstName} {lastName}</strong>
                         </div>
-                        <div className="user-name__sub-title">Thành viên mới</div>
+                        <span className="user-name__sub-title">Thành viên mới</span>
                     </div>
                 </div>
-                <button className="btn btn-sm btn-4">
+
+                <a href="https://zalo.me/g/amvele677" target="_blank" className="btn btn-sm btn-4">
                     <img src={T2CapitalIcon} className="token-ic sm mr-8" alt="" />
                     <span className='fs-12'>
-                        Join T2Capital
+                        Tham gia ngay
                     </span>
-                </button>
+                </a>
             </section>
 
             <section className="tap-game__main">

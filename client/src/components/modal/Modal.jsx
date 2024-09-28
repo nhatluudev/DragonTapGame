@@ -12,7 +12,7 @@ export default function Modal({ modalInfo }) {
     useEffect(() => {
         // Reset state when modalInfo changes
         setVisible(true);
-        remainingTimeRef.current = modalInfo?.status === "congrat" ? 5000 : 4000; // Reset the remaining time
+        remainingTimeRef.current = modalInfo?.status === "congrat" ? 5000 : 3500; // Reset the remaining time
         startTimeRef.current = Date.now(); // Reset the start time
         setHovered(false); // Reset hover state
 
