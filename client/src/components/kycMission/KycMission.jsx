@@ -84,7 +84,6 @@ export default function KycMission() {
         }
     };
 
-
     return (
         <div className="overlay" onClick={handleOverlayClick}>
             <div className="modal-form type-1 kyc-mission">

@@ -12,10 +12,10 @@ import { isFilled } from "../../utils/validator";
 export default function InCommunityMission() {
     const { userInfo, setUserInfo } = useAuth();
     const { setModalInfo } = useModal();
-    const navigate = useNavigate();
     const [isCheckInCommunityLoading, setIsCheckInCommunityLoading] = useState();
     const [inputs, setInputs] = useState({});
     const [errors, setErrors] = useState({});
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -76,8 +76,14 @@ export default function InCommunityMission() {
         }
     };
 
+    const handleOverlayClick = (e) => {
+        if (e.target.classList.contains("overlay")) {
+            navigate("/missions");
+        }
+    };
+
     return (
-        <div className="overlay">
+        <div className="overlay" onClick={handleOverlayClick}>
             <div className="modal-form type-1 kyc-mission">
                 <h3 className="form__title">Gia nhập T2Capital</h3>
                 <div onClick={() => navigate("/missions")}>

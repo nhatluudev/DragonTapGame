@@ -12,9 +12,14 @@ import { useAuth } from "../../contexts/auth/AuthContext";
 export default function InCommunityTutorial() {
     const { userInfo } = useAuth();
     const navigate = useNavigate();
+    const handleOverlayClick = (e) => {
+        if (e.target.classList.contains("overlay")) {
+            navigate("/missions");
+        }
+    };
 
     return (
-        <div className="overlay">
+        <div className="overlay" onClick={handleOverlayClick}>
             <div className="modal-form type-1 kyc-tutorial">
                 <svg onClick={() => navigate("/missions/check-in-community")} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 form__back-ic sm">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />

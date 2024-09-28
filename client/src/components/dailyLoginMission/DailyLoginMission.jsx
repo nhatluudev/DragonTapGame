@@ -14,6 +14,7 @@ export default function DailyLoginMission() {
     const [loginStreak, setLoginStreak] = useState(0); // Default to 0 if userInfo isn't ready
     const loginStreakRewards = [500, 1000, 2500, 5000, 15000, 25000, 50000, 80000, 200000];
     const [hasLoggedInToday, setHasLoggedInToday] = useState(false); // Tracks if the user already logged in
+    const [loading, setLoading] = useState(true); // Tracks the loading state
     const navigate = useNavigate();
 
     // Update loginStreak and streakRewards when userInfo becomes available
@@ -26,12 +27,15 @@ export default function DailyLoginMission() {
 
     // Function to check if the user has already logged in today
     const checkLoginStatus = async () => {
+        setLoading(true);
         try {
             const response = await apiUtils.get(`/users/checkLoginStatus/${userInfo?.telegramId}`);
             console.log(response.data)
             setHasLoggedInToday(response.data.hasLoggedInToday);
         } catch (error) {
             console.error("Error checking login status:", error);
+        } finally {
+            setLoading(false); // Stop loading after the request is complete
         }
     };
 
@@ -56,8 +60,24 @@ export default function DailyLoginMission() {
         }
     };
 
+    const handleOverlayClick = (e) => {
+        if (e.target.classList.contains("overlay")) {
+            navigate("/missions");
+        }
+    };
+
+    // Show loading spinner if still fetching the login status
+    if (loading) {
+        return (
+            <div className="loading">
+                <div className="loading-spinner"></div>
+                <h3>Đang tải ...</h3>
+            </div>
+        )
+    }
+
     return (
-        <div className="overlay">
+        <div className="overlay"  onClick={handleOverlayClick}>
             <div className="modal-form type-1 daily-login-mission">
                 <h3 className="form__title">Điểm danh hằng ngày</h3>
                 <div onClick={() => navigate("/missions")}>
