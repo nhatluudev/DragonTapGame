@@ -5,8 +5,13 @@ import dotenv from 'dotenv';
 dotenv.config();
 import User from "../models/user.model.js";
 import { formatNamiId } from '../utils/formatter.js';
+import moment from 'moment-timezone';
 
 class UserController {
+    getCurrentTimeInVietnam() {
+        return moment().tz('Asia/Ho_Chi_Minh');
+    }
+
     // Create or fetch user by telegramId
     createOrFetchUser = async (req, res) => {
         try {
@@ -53,9 +58,6 @@ class UserController {
             if (typeof user.loginStreak === 'undefined') {
                 user.loginStreak = 0;
             }
-            if (!user.lastLoginDate) {
-                user.lastLoginDate = new Date(0); // default to an old date
-            }
 
             await user.save();
             user.streakRewards = UserController.getRewardForDay(user.loginStreak);
@@ -67,20 +69,27 @@ class UserController {
         }
     };
 
-    // Check if the user has already logged in today
     checkLoginStatus = async (req, res) => {
         try {
             const { telegramId } = req.params;
-            console.log(telegramId)
             const user = await User.findOne({ telegramId });
 
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-            const currentDate = new Date();
-            const lastLoginDate = new Date(user.lastLoginDate);
-            const hasLoggedInToday = lastLoginDate.toDateString() === currentDate.toDateString();
+            const currentDateHCM = this.getCurrentTimeInVietnam();  // Current date in HCM timezone
+            const lastLoginDateHCM = moment(user.lastLoginDate).tz('Asia/Ho_Chi_Minh');  // Last login in HCM timezone
+
+            // Check if the last login was on the current day (same year, month, and day)
+            const hasLoggedInToday = (
+                currentDateHCM.year() === lastLoginDateHCM.year() &&
+                currentDateHCM.month() === lastLoginDateHCM.month() &&
+                currentDateHCM.date() === lastLoginDateHCM.date()
+            );
+
+            console.log(currentDateHCM)
+            console.log(lastLoginDateHCM)
 
             return res.json({ hasLoggedInToday });
         } catch (error) {
@@ -99,29 +108,43 @@ class UserController {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-            const currentDate = new Date();
-            const lastLoginDate = new Date(user.lastLoginDate);
-            const dayDiff = (currentDate - lastLoginDate) / (1000 * 3600 * 24); // Difference in days
+            const currentDateHCM = this.getCurrentTimeInVietnam();  // Current date in HCM timezone
+            const lastLoginDateHCM = moment(user.lastLoginDate).tz('Asia/Ho_Chi_Minh');  // Last login in HCM timezone
 
-            // Check if the user is logging in consecutively or breaking the streak
-            if (dayDiff >= 1 && dayDiff < 2) {
-                user.loginStreak += 1; // Continue the streak
-            } else if (dayDiff >= 2) {
-                user.loginStreak = 1; // Reset streak if more than 1 day passed
+            // Check if the last login was on a different day than today
+            const isNewDay = (
+                currentDateHCM.year() !== lastLoginDateHCM.year() ||
+                currentDateHCM.month() !== lastLoginDateHCM.month() ||
+                currentDateHCM.date() !== lastLoginDateHCM.date()
+            );
+
+            if (isNewDay) {
+                const dayDiff = currentDateHCM.diff(lastLoginDateHCM, 'days');  // Calculate the day difference
+
+                if (dayDiff === 1) {
+                    user.loginStreak += 1; // Continue the streak
+                } else if (dayDiff > 1) {
+                    user.loginStreak = 1; // Reset the streak if it's been more than a day
+                }
+
+                // Update last login date and save the user
+                user.lastLoginDate = new Date();  // Store in UTC
+                const currentReward = UserController.getRewardForDay(user.loginStreak); // Get reward for the current streak day
+                user.tokens += currentReward; // Add reward to user tokens
+                user.streakRewards = currentReward;
+                await user.save();
+
+                return res.json({
+                    success: true,
+                    loginStreak: user.loginStreak,
+                    reward: currentReward || 0, // Reward for the current day
+                });
+            } else {
+                return res.json({
+                    success: false,
+                    message: 'Already logged in today',
+                });
             }
-
-            // Update last login date and save the user
-            user.lastLoginDate = currentDate;
-            const currentReward = UserController.getRewardForDay(user.loginStreak); // Get reward for the current streak day
-            user.tokens += currentReward; // Add reward to user tokens
-            user.streakRewards = currentReward;
-            await user.save();
-
-            return res.json({
-                success: true,
-                loginStreak: user.loginStreak,
-                reward: currentReward || 0, // Get reward for the current day
-            });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ message: 'Server error' });
@@ -134,6 +157,59 @@ class UserController {
         return rewards[streak - 1] || rewards[rewards.length - 1]; // Return reward for the current streak day or cap at the max reward
     }
 
+    startMission = async (req, res) => {
+        try {
+            const { telegramId, missionType } = req.body;
+            const user = await User.findOne({ telegramId });
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            // Set status to "started" and record the start time in UTC
+            user.missions[missionType].status = 'started';
+
+            await user.save();
+            return res.json({ user });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Server error' });
+        }
+    }
+
+    checkMission = async (req, res) => {
+        try {
+            const { telegramId, missionType } = req.body;
+            const user = await User.findOne({ telegramId });
+            if (!user) return res.status(404).json({ message: 'User not found' });
+
+            const currentTime = new Date();
+
+            user.missions[missionType].status = 'checked';
+            user.missions[missionType].lastCheckTime = currentTime; // Convert moment object back to JS Date
+            await user.save();
+
+            return res.json({ user });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Server error' });
+        }
+    }
+
+    rewardMission = async (req, res) => {
+        try {
+            const { telegramId, missionType } = req.body;
+
+            const user = await User.findOne({ telegramId });
+            if (!user) return res.status(404).json({ message: 'User not found' });
+            user.missions[missionType].status = 'rewarded';
+            await user.save();
+
+            return res.json({ user });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Server error' });
+        }
+    }
 
     // Get last 10-minute check-in status
     getTenMinCheckInStatus = async (req, res) => {
@@ -148,8 +224,8 @@ class UserController {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-            const currentTime = new Date();
-            const lastCheckInTime = user.lastTenMinCheckIn || new Date(0); // Fallback to an old date
+            const currentTime = this.getCurrentTimeInVietnam();
+            const lastCheckInTime = user.lastTenMinCheckIn || this.getCurrentTimeInVietnam(); // Fallback to an old date
 
             // Calculate the time difference in minutes
             const timeDifference = (currentTime - lastCheckInTime) / (1000 * 60); // Convert from milliseconds to minutes
@@ -182,8 +258,8 @@ class UserController {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-            const currentTime = new Date();
-            const lastCheckInTime = user.lastTenMinCheckIn || new Date(0); // Fallback to an old date
+            const currentTime = this.getCurrentTimeInVietnam();
+            const lastCheckInTime = user.lastTenMinCheckIn || this.getCurrentTimeInVietnam(); // Fallback to an old date
 
             // Calculate the time difference in minutes
             const timeDifference = (currentTime - lastCheckInTime) / (1000 * 60); // Convert from milliseconds to minutes
@@ -278,8 +354,10 @@ class UserController {
                 user.isKyc = true;
                 tokensEarned += 20000;
             }
-
+            console.log(user.tokens)
             user.tokens += tokensEarned;
+            console.log(tokensEarned)
+            console.log(user.tokens)
 
             await user.save();
 

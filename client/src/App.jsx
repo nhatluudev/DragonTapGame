@@ -71,7 +71,7 @@ function App() {
     // Hide OnBoard after 3 seconds
     const timer = setTimeout(() => {
       setShowOnBoard(false);
-    }, 4000);
+    }, 1000);
 
     // Cleanup the timer on unmount
     return () => clearTimeout(timer);

@@ -15,5 +15,8 @@ userRouter.post('/createOrFetchUser', asyncHandler(TapController.createOrFetchUs
 userRouter.post("/getLoginReward", asyncHandler(UserController.getLoginReward))
 userRouter.post("/tenMinCheckIn", asyncHandler(UserController.tenMinCheckIn))
 userRouter.post("/checkMemberStatus", asyncHandler(UserController.checkMemberStatus))
+userRouter.post("/startMission", asyncHandler(UserController.startMission))
+userRouter.post("/checkMission", asyncHandler(UserController.checkMission))
+userRouter.post("/rewardMission", asyncHandler(UserController.rewardMission))
 
 export default userRouter;

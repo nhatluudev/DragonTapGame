@@ -7,6 +7,7 @@ import { useAuth } from "../../contexts/auth/AuthContext";
 import "./DailyLoginMission.scss";
 import { apiUtils } from "../../utils/newRequest";
 import { useModal } from "../../contexts/modal/ModalContext";
+import { formatFloat } from "../../utils/formatter";
 
 export default function DailyLoginMission() {
     const { userInfo, setUserInfo } = useAuth();
@@ -95,7 +96,7 @@ export default function DailyLoginMission() {
                         <div key={index} className={`daily-login-mission-item btn ${index < loginStreak ? 'btn-4' : ''}`}>
                             <span className="daily-login-mission-item__title">Ngày {index + 1}</span>
                             <img src={TokenIcon} alt="" className="token-ic sm" />
-                            <span className="daily-login-mission-item__token">{loginStreakRewards[index] || 0}</span>
+                            <span className="daily-login-mission-item__token">{formatFloat(loginStreakRewards[index]) || 0}</span>
                         </div>
                     ))}
                 </div>

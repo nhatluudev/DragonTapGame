@@ -3,9 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 
 // Styling and assets
 import "./KycTutorial.scss";
-import KycTutorial1 from "../../assets/img/kyc-tutorial-1.png"
-import KycTutorial2 from "../../assets/img/kyc-tutorial-2.png"
-import KycTutorial3 from "../../assets/img/kyc-tutorial-3.png"
+import KycTutorial1 from "../../assets/img/join-nami-1.png"
+import KycTutorial2 from "../../assets/img/join-nami-2.png"
+import KycTutorial3 from "../../assets/img/join-nami-3.png"
 import { apiUtils } from "../../utils/newRequest";
 import { useAuth } from "../../contexts/auth/AuthContext";
 

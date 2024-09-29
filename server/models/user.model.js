@@ -18,6 +18,20 @@ const userSchema = new mongoose.Schema({
     isInCommunity: { type: Boolean, default: false },
     isKyc: { type: Boolean, default: false },
     namiId: { type: String, default: "" },
+    missions: {
+        telegramReaction: {
+            status: { type: String, default: 'pending' }, // Values: 'pending', 'checking', 'rewarded'
+            lastCheckTime: { type: Date, default: null },
+        },
+        facebookReaction: {
+            status: { type: String, default: 'pending' },
+            lastCheckTime: { type: Date, default: null },
+        },
+        joinTelegramGroup: {
+            status: { type: String, default: 'pending' },
+            lastCheckTime: { type: Date, default: null },
+        },
+    },
 });
 
 const User = mongoose.model('User', userSchema);

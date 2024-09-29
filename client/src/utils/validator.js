@@ -48,3 +48,7 @@ export function hasDigit(val) {
 export function isValidPassword(password) {
     return minLength(password, 6) && hasDigit(password) && hasSymbol(password);
 }
+
+export function isDate(date) {
+    return (new Date(date) !== "Invalid Date") && !isNaN(new Date(date));
+}

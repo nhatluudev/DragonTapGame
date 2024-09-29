@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from "react"
 import { Link, Outlet } from "react-router-dom"
 import { useAuth } from '../../contexts/auth/AuthContext.jsx';
-import { formatFloat } from "../../utils/formatter.js";
+import { convertUTCToLocalDateTime, formatFloat } from "../../utils/formatter.js";
 import { apiUtils } from "../../utils/newRequest.js";
 
 // Styling
@@ -15,8 +15,10 @@ import CalendarIcon from "../../assets/img/calendar.png";
 import AttendanceIcon from "../../assets/img/attendance.png";
 import TelegramIcon from "../../assets/img/telegram.png";
 import FacebookIcon from "../../assets/img/facebook.png";
+import BotSignalIcon from "../../assets/img/bot.png";
 import "./Mission.scss"
 import { useModal } from "../../contexts/modal/ModalContext.jsx";
+import { isDate } from "../../utils/validator.js";
 
 export default function Mission() {
     const { userInfo, setUserInfo } = useAuth();
@@ -78,7 +80,7 @@ export default function Mission() {
             const response = await apiUtils.get(`/users/checkLoginStatus/${userInfo?.telegramId}`);
             setHasLoggedInToday(response.data.hasLoggedInToday);
         } catch (error) {
-            console.error("Error checking login status:", error);
+            console.error("Error started login status:", error);
         }
     };
 
@@ -158,6 +160,75 @@ export default function Mission() {
         fetchEssentialData();
     }, [telegramId]);
 
+    const handleStartMission = async (missionType) => {
+        console.log(missionType)
+        // Proceed with the backend request to start the mission
+        try {
+            const response = await apiUtils.post('/users/startMission', { telegramId, missionType });
+            console.log(response)
+
+            if (response.data) {
+                setUserInfo(response.data.user)
+            }
+        } catch (error) {
+            console.error("Error starting the mission:", error);
+        }
+    };
+
+    const handleCheckMission = async (missionType) => {
+        // Proceed with the backend request to start the mission
+        console.log(missionType)
+        try {
+            const response = await apiUtils.post('/users/checkMission', { telegramId, missionType });
+            console.log(response)
+
+            if (response.data) {
+                setUserInfo(response.data.user)
+            }
+        } catch (error) {
+            console.error("Error checking the mission:", error);
+        }
+    };
+
+    const handleRewardMission = async (missionType) => {
+        // Proceed with the backend request to start the mission
+        console.log(missionType)
+        try {
+            const response = await apiUtils.post('/users/rewardMission', { telegramId, missionType });
+            console.log(response)
+
+            if (response.data) {
+                setUserInfo(response.data.user)
+            }
+        } catch (error) {
+            console.error("Error checking the mission:", error);
+        }
+    };
+
+    // Helper to determine if the 'check' button should be shown based on last check time
+    const shouldShowRewardButton = (lastCheckTime) => {
+        if (!lastCheckTime) return false; // Ensure lastCheckTime exists
+
+        // Convert lastCheckTime to local Vietnam time as a Date object
+        const localLastCheckTime = convertUTCToLocalDateTime(lastCheckTime);
+
+        if (!localLastCheckTime) return false; // Ensure the conversion was successful
+
+        // 5 minutes in milliseconds
+        const FIVE_MINUTES = 1 * 60 * 1000;
+
+        // Get the current time in milliseconds
+        const now = Date.now();
+
+        // Calculate the difference in milliseconds
+        const timeDifference = now - localLastCheckTime.getTime(); // Subtract the timestamps
+
+        console.log(timeDifference)
+
+        // Return true if more than 5 minutes have passed
+        return timeDifference > FIVE_MINUTES;
+    };
+
     // Show a loading spinner or message while data is being fetched
     if (isLoading) {
         return (
@@ -167,6 +238,11 @@ export default function Mission() {
             </div>
         )
     }
+
+    const currentDate = new Date();
+    const pastDate = new Date("2024-09-29T09:41:35+07:00");
+    const differenceInMilliseconds = currentDate - pastDate;
+    console.log(differenceInMilliseconds / (1000 * 60 * 60))
 
     return (
         <div className="mission">
@@ -178,13 +254,139 @@ export default function Mission() {
             <section className="mission__daily mb-24">
                 <h3 className="section__title">
                     <img src={GoalIcon} className="section__ic" alt="" />
-                    Nhiệm vụ hằng ngày
+                    Nhiệm vụ nhận thưởng
+
+                    {/* {new Date().toLocaleString() - new Date("2024-09-29T09:41:35+07:00")} */}
                 </h3>
-                <p className="annotation">
-                    Các nhiệm vụ sẽ được reset vào lúc 0:00 hằng ngày
-                </p>
 
                 <div className="mission-container">
+                    <a href="https://t.me/FuturesSignalVipPro" target="_blank" rel="noopener noreferrer" className="mission-item" onClick={() => userInfo?.missions?.telegramReaction?.status == "pending" ? handleStartMission('telegramReaction') : null}>
+                        <div className="mission-item--left">
+                            <img src={TelegramIcon} alt="" className="mission-item__ic" />
+                            <div>
+                                <strong className="mission-item__title">Phản ứng bài viết mới nhất ở Telegram</strong>
+                                <span className="mission-item__sub-title flex-align-center">
+                                    <img src={TokenIcon} className="token-ic sm mr-4" />
+                                    <strong>+1,000</strong>
+                                </span>
+                            </div>
+                        </div>
+                        <div className="mission-item--right">
+                            {/* {userInfo.missions.telegramReaction.lastCheckTime} */}
+                            {userInfo?.missions?.telegramReaction?.status === "pending" && (
+                                <button className="btn btn-sm btn-4" onClick={() => handleStartMission('telegramReaction')}>
+                                    Thực hiện
+                                </button>
+                            )}
+                            {userInfo?.missions?.telegramReaction?.status === "started" && (
+                                <button className="btn btn-sm btn-4" onClick={() => handleCheckMission('telegramReaction')}>
+                                    Kiểm tra
+                                </button>
+                            )}
+                            {userInfo?.missions?.telegramReaction?.status === "checked" && (
+                                shouldShowRewardButton(userInfo?.missions?.telegramReaction?.lastCheckTime) ? (
+                                    <button className="btn btn-sm btn-4" onClick={() => handleRewardMission('telegramReaction')}>
+                                        Nhận thưởng
+                                    </button>
+                                ) : (
+                                    <button className="btn btn-sm btn-4">
+                                        Kiểm tra
+                                    </button>
+                                )
+                            )}
+                            {userInfo?.missions?.telegramReaction?.status === "rewarded" && (
+                                <button className="btn btn-sm btn-5">
+                                    Đã nhận
+                                </button>
+                            )}
+                        </div>
+                    </a>
+
+                    <a href="https://www.facebook.com/groups/namiexchangeglobal" target="_blank" rel="noopener noreferrer" className="mission-item" onClick={() => userInfo?.missions?.facebookReaction?.status == "pending" ? handleStartMission('facebookReaction') : null}>
+                        <div className="mission-item--left">
+                            <img src={FacebookIcon} alt="" className="mission-item__ic" />
+                            <div>
+                                <strong className="mission-item__title">Phản ứng bài viết mới nhất ở Facebook</strong>
+                                <span className="mission-item__sub-title flex-align-center">
+                                    <img src={TokenIcon} className="token-ic sm mr-4" />
+                                    <strong>+1,000</strong>
+                                </span>
+                            </div>
+                        </div>
+                        <div className="mission-item--right">
+                            {/* {userInfo.missions.facebookReaction.lastCheckTime} */}
+                            {userInfo?.missions?.facebookReaction?.status === "pending" && (
+                                <button className="btn btn-sm btn-4" onClick={() => handleStartMission('facebookReaction')}>
+                                    Thực hiện
+                                </button>
+                            )}
+                            {userInfo?.missions?.facebookReaction?.status === "started" && (
+                                <button className="btn btn-sm btn-4" onClick={() => handleCheckMission('facebookReaction')}>
+                                    Kiểm tra
+                                </button>
+                            )}
+                            {userInfo?.missions?.facebookReaction?.status === "checked" && (
+                                shouldShowRewardButton(userInfo?.missions?.facebookReaction?.lastCheckTime) ? (
+                                    <button className="btn btn-sm btn-4" onClick={() => handleRewardMission('facebookReaction')}>
+                                        Nhận thưởng
+                                    </button>
+                                ) : (
+                                    <button className="btn btn-sm btn-4">
+                                        Kiểm tra
+                                    </button>
+                                )
+                            )}
+                            {userInfo?.missions?.facebookReaction?.status === "rewarded" && (
+                                <button className="btn btn-sm btn-5">
+                                    Đã nhận
+                                </button>
+                            )}
+                        </div>
+                    </a>
+
+
+                    <a href="https://t.me/nami_signals" target="_blank" rel="noopener noreferrer" className="mission-item" onClick={() => userInfo?.missions?.joinTelegramGroup?.status == "pending" ? handleStartMission('joinTelegramGroup') : null}>
+                        <div className="mission-item--left">
+                            <img src={BotSignalIcon} alt="" className="mission-item__ic" />
+                            <div>
+                                <strong className="mission-item__title">Tham Gia vào nhóm Bot Signal</strong>
+                                <span className="mission-item__sub-title flex-align-center">
+                                    <img src={TokenIcon} className="token-ic sm mr-4" />
+                                    <strong>+1,000</strong>
+                                </span>
+                            </div>
+                        </div>
+                        <div className="mission-item--right">
+                            {/* {userInfo.missions.joinTelegramGroup.lastCheckTime} */}
+                            {userInfo?.missions?.joinTelegramGroup?.status === "pending" && (
+                                <button className="btn btn-sm btn-4" onClick={() => handleStartMission('joinTelegramGroup')}>
+                                    Thực hiện
+                                </button>
+                            )}
+                            {userInfo?.missions?.joinTelegramGroup?.status === "started" && (
+                                <button className="btn btn-sm btn-4" onClick={() => handleCheckMission('joinTelegramGroup')}>
+                                    Kiểm tra
+                                </button>
+                            )}
+                            {userInfo?.missions?.joinTelegramGroup?.status === "checked" && (
+                                shouldShowRewardButton(userInfo?.missions?.joinTelegramGroup?.lastCheckTime) ? (
+                                    <button className="btn btn-sm btn-4" onClick={() => handleRewardMission('joinTelegramGroup')}>
+                                        Nhận thưởng
+                                    </button>
+                                ) : (
+                                    <button className="btn btn-sm btn-4">
+                                        Kiểm tra
+                                    </button>
+                                )
+                            )}
+                            {userInfo?.missions?.joinTelegramGroup?.status === "rewarded" && (
+                                <button className="btn btn-sm btn-5">
+                                    Đã nhận
+                                </button>
+                            )}
+                        </div>
+                    </a>
+
                     <Link to="/missions/daily-login" className="mission-item">
                         <div className="mission-item--left">
                             <img src={CalendarIcon} alt="" className="mission-item__ic" />
@@ -194,7 +396,9 @@ export default function Mission() {
                                         Điểm danh hằng ngày
                                     </strong>
                                 </div>
-                                <span className="mission-item__sub-title flex-align-center"><img src={TokenIcon} className="token-ic sm mr-4" /> +5,000</span>
+                                <span className="mission-item__sub-title flex-align-center"><img src={TokenIcon} className="token-ic sm mr-4" />
+                                    <strong>+5,000</strong>
+                                </span>
                             </div>
                         </div>
                         <div className="mission-item--right">
@@ -212,7 +416,8 @@ export default function Mission() {
                                     <strong className="mission-item__title">Ghi danh 10 phút 1 lần</strong>
                                 </div>
                                 <span className="mission-item__sub-title flex-align-center">
-                                    <img src={TokenIcon} className="token-ic sm mr-4" /> +1,000
+                                    <img src={TokenIcon} className="token-ic sm mr-4" />
+                                    <strong>+1,000</strong>
                                 </span>
                             </div>
                         </div>
@@ -231,7 +436,7 @@ export default function Mission() {
                     Nhiệm vụ Rồng Xanh
                 </h3>
                 <p className="annotation">
-                    Thực hiện nhiệm vụ để nhận lượng lớn token
+                    Thực hiện nhiệm vụ Rồng Xanh để nhận được những phần quà giá trị khi BXH được niêm yết
                 </p>
 
                 <div className="mission-container">
@@ -244,7 +449,9 @@ export default function Mission() {
                                         Download Nami app
                                     </strong>
                                 </div>
-                                <span className="mission-item__sub-title flex-align-center"><img src={TokenIcon} className="token-ic sm mr-8" /> +5,000</span>
+                                <span className="mission-item__sub-title flex-align-center"><img src={TokenIcon} className="token-ic sm mr-8" />
+                                    <strong>+5,000</strong>
+                                </span>
                             </div>
                         </div>
                         <div className="mission-item--right">
@@ -269,7 +476,9 @@ export default function Mission() {
                                         Hoàn tất KYC tài khoản Nami
                                     </strong>
                                 </div>
-                                <span className="mission-item__sub-title flex-align-center"><img src={TokenIcon} className="token-ic sm mr-8" /> +1,000</span>
+                                <span className="mission-item__sub-title flex-align-center"><img src={TokenIcon} className="token-ic sm mr-8" />
+                                    <strong>+1,000</strong>
+                                </span>
                             </div>
                         </div>
                         <div className="mission-item--right">
@@ -282,56 +491,6 @@ export default function Mission() {
                             }
                         </div>
                     </Link>
-                </div>
-            </section>
-
-            <section className="mission__daily mb-24">
-                <h3 className="section__title">
-                    <img src={GoalIcon} className="section__ic" alt="" />
-                    Nhiệm vụ cộng đồng
-                </h3>
-                <p className="annotation">
-                    Các nhiệm vụ sẽ được reset vào lúc 0:00 hằng ngày
-                </p>
-
-                <div className="mission-container">
-                    <Link to="/missions/daily-login" className="mission-item">
-                        <div className="mission-item--left">
-                            <img src={FacebookIcon} alt="" className="mission-item__ic" />
-                            <div>
-                                <div>
-                                    <strong className="mission-item__title">
-                                        Điểm danh hằng ngày
-                                    </strong>
-                                </div>
-                                <span className="mission-item__sub-title flex-align-center"><img src={TokenIcon} className="token-ic sm mr-4" /> +5,000</span>
-                            </div>
-                        </div>
-                        <div className="mission-item--right">
-                            <button className={`btn btn-sm ${hasLoggedInToday ? 'btn-4' : 'btn-5'}`}>
-                                {hasLoggedInToday ? 'Thực hiện' : `Đã nhận`}
-                            </button>
-                        </div>
-                    </Link>
-
-                    <div className="mission-item" onClick={canCheckIn ? handleTenMinCheckIn : null}>
-                        <div className="mission-item--left">
-                            <img src={TelegramIcon} alt="" className="mission-item__ic" />
-                            <div>
-                                <div>
-                                    <strong className="mission-item__title">Ghi danh 10 phút 1 lần</strong>
-                                </div>
-                                <span className="mission-item__sub-title flex-align-center">
-                                    <img src={TokenIcon} className="token-ic sm mr-4" /> +1,000
-                                </span>
-                            </div>
-                        </div>
-                        <div className="mission-item--right">
-                            <button className={`btn btn-sm ${canCheckIn ? 'btn-4' : 'btn-5'}`} disabled={!canCheckIn}>
-                                {canCheckIn ? 'Thực hiện' : `Đã nhận`}
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </section>
             <Outlet />

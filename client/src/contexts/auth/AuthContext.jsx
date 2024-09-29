@@ -35,7 +35,8 @@ export const AuthProvider = ({ children }) => {
             console.log(window.Telegram.WebApp.initDataUnsafe.user)
             if (window.Telegram && window.Telegram.WebApp) {
                 // window.Telegram.WebApp.onEvent('ready', () => {
-                const { id: telegramId, first_name: firstName, last_name: lastName } = window.Telegram.WebApp.initDataUnsafe.user || {};
+                // const { id: telegramId, first_name: firstName, last_name: lastName } = window.Telegram.WebApp.initDataUnsafe.user || {};
+                const {telegramId, firstName, lastName} = {"telegramId": "123", "firstName": "Hao", "lastName": "Truong"};
                 console.log(telegramId, firstName, lastName)
                 if (telegramId) {
                     console.log("RUN THISS")

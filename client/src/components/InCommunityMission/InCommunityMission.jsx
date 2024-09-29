@@ -58,7 +58,7 @@ export default function InCommunityMission() {
                     message: "Nhiệm vụ gia nhập T2Capital đã hoàn tất"
                 })
                 navigate("/missions")
-                setUserInfo({ ...userInfo, isInCommunity: true });
+                setUserInfo({ ...userInfo, isInCommunity: response.data.isInCommunity, isKyc: response.data.isKyc});
             } else {
                 setModalInfo({
                     status: "error",
