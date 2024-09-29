@@ -23,7 +23,19 @@ const userSchema = new mongoose.Schema({
             status: { type: String, default: 'pending' }, // Values: 'pending', 'checking', 'rewarded'
             lastCheckTime: { type: Date, default: null },
         },
+        telegramNamiReaction: {
+            status: { type: String, default: 'pending' },
+            lastCheckTime: { type: Date, default: null },
+        },
         facebookReaction: {
+            status: { type: String, default: 'pending' },
+            lastCheckTime: { type: Date, default: null },
+        },
+        facebookFanpageReaction: {
+            status: { type: String, default: 'pending' },
+            lastCheckTime: { type: Date, default: null },
+        },
+        facebookNamiFanpageReaction: {
             status: { type: String, default: 'pending' },
             lastCheckTime: { type: Date, default: null },
         },

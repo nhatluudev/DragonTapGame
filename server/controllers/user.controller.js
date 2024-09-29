@@ -79,17 +79,27 @@ class UserController {
             }
 
             const currentDateHCM = this.getCurrentTimeInVietnam();  // Current date in HCM timezone
+
+            // Check if lastLoginDate is null, meaning the user has never logged in before
+            if (!user.lastLoginDate) {
+                // Allow login (as it would be their first time)
+                return res.json({ hasLoggedInToday: false });
+            }
+
             const lastLoginDateHCM = moment(user.lastLoginDate).tz('Asia/Ho_Chi_Minh');  // Last login in HCM timezone
 
-            // Check if the last login was on the current day (same year, month, and day)
-            const hasLoggedInToday = (
-                currentDateHCM.year() === lastLoginDateHCM.year() &&
-                currentDateHCM.month() === lastLoginDateHCM.month() &&
-                currentDateHCM.date() === lastLoginDateHCM.date()
-            );
+            // Reset the time of currentDateHCM and lastLoginDateHCM to 0:00 to check the day boundary
+            const currentStartOfDayHCM = currentDateHCM.clone().startOf('day');  // 0:00 of today in HCM timezone
+            const lastLoginStartOfDayHCM = lastLoginDateHCM.clone().startOf('day');  // 0:00 of the last login day
 
-            console.log(currentDateHCM)
-            console.log(lastLoginDateHCM)
+            // Check if the current time is after 0:00 on a new day
+            const hasLoggedInToday = !currentStartOfDayHCM.isAfter(lastLoginStartOfDayHCM);
+
+            console.log("Current HCM Date:", currentDateHCM.format());
+            console.log("Last Login HCM Date:", lastLoginDateHCM.format());
+            console.log("Current start of day:", currentStartOfDayHCM.format());
+            console.log("Last login start of day:", lastLoginStartOfDayHCM.format());
+            console.log("Has logged in today:", hasLoggedInToday);
 
             return res.json({ hasLoggedInToday });
         } catch (error) {
@@ -98,7 +108,6 @@ class UserController {
         }
     };
 
-    // Function to get daily login reward
     getLoginReward = async (req, res) => {
         try {
             const { telegramId } = req.body;
@@ -108,17 +117,40 @@ class UserController {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-            const currentDateHCM = this.getCurrentTimeInVietnam();  // Current date in HCM timezone
+            let currentDateHCM = this.getCurrentTimeInVietnam();  // Current date in HCM timezone
+
+            // If lastLoginDate is null, treat it as the first login
+            if (!user.lastLoginDate) {
+                // User is logging in for the first time
+                user.loginStreak = 1; // Start the streak at day 1
+                user.lastLoginDate = new Date();  // Store the login date in UTC
+                const currentReward = UserController.getRewardForDay(user.loginStreak); // Get reward for day 1
+                user.tokens += currentReward; // Add reward to user's tokens
+                user.streakRewards = currentReward;
+                await user.save();
+
+                return res.json({
+                    success: true,
+                    loginStreak: user.loginStreak,
+                    reward: currentReward || 0, // Reward for the first day
+                });
+            }
+
             const lastLoginDateHCM = moment(user.lastLoginDate).tz('Asia/Ho_Chi_Minh');  // Last login in HCM timezone
 
+            // Reset the time of currentDateHCM and lastLoginDateHCM to 0:00 to check the day boundary
+            const currentStartOfDayHCM = currentDateHCM.clone().startOf('day');  // 0:00 of today in HCM timezone
+            const lastLoginStartOfDayHCM = lastLoginDateHCM.clone().startOf('day');  // 0:00 of the last login day
+
             // Check if the last login was on a different day than today
-            const isNewDay = (
-                currentDateHCM.year() !== lastLoginDateHCM.year() ||
-                currentDateHCM.month() !== lastLoginDateHCM.month() ||
-                currentDateHCM.date() !== lastLoginDateHCM.date()
-            );
+            const isNewDay = currentStartOfDayHCM.isAfter(lastLoginStartOfDayHCM);
+
+            console.log("Current HCM Date:", currentDateHCM.format());
+            console.log("Last Login HCM Date:", lastLoginDateHCM.format());
 
             if (isNewDay) {
+                console.log("A new day detected");
+
                 const dayDiff = currentDateHCM.diff(lastLoginDateHCM, 'days');  // Calculate the day difference
 
                 if (dayDiff === 1) {
@@ -142,7 +174,7 @@ class UserController {
             } else {
                 return res.json({
                     success: false,
-                    message: 'Already logged in today',
+                    message: 'Đã điểm danh cho hôm nay',
                 });
             }
         } catch (error) {
@@ -153,7 +185,7 @@ class UserController {
 
     // Function to get the reward for the current day
     static getRewardForDay(streak) {
-        const rewards = [500, 1000, 2500, 5000, 15000, 25000, 50000, 80000, 200000]; // Example rewards
+        const rewards = [500, 1000, 2500, 5000, 15000, 25000, 50000, 80000, 100000]; // Example rewards
         return rewards[streak - 1] || rewards[rewards.length - 1]; // Return reward for the current streak day or cap at the max reward
     }
 
@@ -202,6 +234,13 @@ class UserController {
             const user = await User.findOne({ telegramId });
             if (!user) return res.status(404).json({ message: 'User not found' });
             user.missions[missionType].status = 'rewarded';
+
+            if (missionType === "joinTelegramGroup") {
+                user.tokens += 20000;
+            } else {
+                user.tokens += 2500;
+            }
+
             await user.save();
 
             return res.json({ user });
@@ -215,8 +254,6 @@ class UserController {
     getTenMinCheckInStatus = async (req, res) => {
         try {
             const { telegramId } = req.params;
-            console.log("KKK")
-            console.log(telegramId);
             // Find the user by telegramId
             const user = await User.findOne({ telegramId });
 
@@ -224,8 +261,8 @@ class UserController {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-            const currentTime = this.getCurrentTimeInVietnam();
-            const lastCheckInTime = user.lastTenMinCheckIn || this.getCurrentTimeInVietnam(); // Fallback to an old date
+            const currentTime = new Date();
+            const lastCheckInTime = user.lastTenMinCheckIn || new Date(0) // Fallback to an old date
 
             // Calculate the time difference in minutes
             const timeDifference = (currentTime - lastCheckInTime) / (1000 * 60); // Convert from milliseconds to minutes
@@ -258,8 +295,8 @@ class UserController {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-            const currentTime = this.getCurrentTimeInVietnam();
-            const lastCheckInTime = user.lastTenMinCheckIn || this.getCurrentTimeInVietnam(); // Fallback to an old date
+            const currentTime = new Date();
+            const lastCheckInTime = user.lastTenMinCheckIn || new Date(0); // Fallback to an old date
 
             // Calculate the time difference in minutes
             const timeDifference = (currentTime - lastCheckInTime) / (1000 * 60); // Convert from milliseconds to minutes
@@ -317,10 +354,8 @@ class UserController {
         try {
             let { namiId, telegramId } = req.body; // Extract namiId from the request body
             namiId = formatNamiId(namiId);
-            console.log(namiId)
             let user = await User.findOne({ telegramId });
             let tokensEarned = 0;
-            console.log("ABC")
 
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
@@ -344,7 +379,7 @@ class UserController {
             // and now they do
             if (!user.isInCommunity && memberStatus.isInCommunity) {
                 user.isInCommunity = true;
-                tokensEarned += 10000;
+                tokensEarned += 20000;
                 user.namiId = namiId;
             }
 
@@ -352,7 +387,7 @@ class UserController {
             // and now they do
             if (!user.isKyc && memberStatus.isKyc) {
                 user.isKyc = true;
-                tokensEarned += 20000;
+                tokensEarned += 100000;
             }
             console.log(user.tokens)
             user.tokens += tokensEarned;

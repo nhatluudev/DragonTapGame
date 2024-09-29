@@ -10,9 +10,9 @@ import { formatFloat } from '../../utils/formatter';
 
 export default function Rank() {
     const [leaderboard, setLeaderboard] = useState([]);
-    const [totalUsers, setTotalUsers] = useState(16000);
+    const [totalUsers, setTotalUsers] = useState();
     const [loading, setLoading] = useState(true);
-    
+
     useEffect(() => {
         // Function to fetch the leaderboard data from the server
         const fetchLeaderboard = async () => {
@@ -20,7 +20,7 @@ export default function Rank() {
                 const response = await apiUtils.get('/users/leaderboard');
                 console.log(response.data)
                 setLeaderboard(response.data.leaderboard);
-                setTotalUsers(response.data.totalUsers);
+                setTotalUsers(response.data.totalUsers + 3720);
             } catch (error) {
                 console.error('Error fetching leaderboard:', error);
             } finally {
@@ -56,26 +56,26 @@ export default function Rank() {
 
             <section className="rank__statistic text-align-center mb-20">
                 <h4 className="flex-align-self-start mb-20">
-                    BXH sẽ đóng và trao thưởng khi đạt 200,000 người chơi
+                    BXH sẽ đóng và trao thưởng cho T2-er khi đạt 100,000 người chơi
                 </h4>
                 <div className="rank__statistic-container">
                     <div className="rank__statistic-item">
                         <div>
-                            <strong className="rank__statistic-item__title">{formatFloat(totalUsers + 1842)}</strong>
+                            <strong className="rank__statistic-item__title">{formatFloat(totalUsers)}+</strong>
                         </div>
                         <div className="rank__statistic-item__sub-title annotation">người chơi</div>
                     </div>
                     <hr />
                     <div className="rank__statistic-item">
                         <div>
-                            <strong className="rank__statistic-item__title">3,000,000</strong>
+                            <strong className="rank__statistic-item__title">3,000,000+</strong>
                         </div>
                         <div className="rank__statistic-item__sub-title annotation">tokens</div>
                     </div>
                     <hr />
                     <div className="rank__statistic-item">
                         <div>
-                            <strong className="rank__statistic-item__title">150M VND</strong>
+                            <strong className="rank__statistic-item__title">150M+ VND</strong>
                         </div>
                         <div className="rank__statistic-item__sub-title annotation">tiền thưởng</div>
                     </div>
@@ -93,7 +93,7 @@ export default function Rank() {
                         </tr>
                     </thead>
                     <tbody>
-                        {leaderboard?.map((player, index) => (
+                        {leaderboard?.slice(0, 10).map((player, index) => (
                             <tr key={index}>
                                 <td>
                                     {index === 0 ? <img src={FirstPrizeIcon} alt="" />
@@ -109,7 +109,7 @@ export default function Rank() {
                     </tbody>
                 </table>
 
-                <p className="annotation text-align-center">{formatFloat(totalUsers + 1842)}+ người chơi khác cũng đang leo BXH DragonTap</p>
+                <p className="annotation text-align-center">{formatFloat(totalUsers - 10)}+ người chơi khác cũng đang leo BXH DragonTap</p>
             </section>
         </div>
     );

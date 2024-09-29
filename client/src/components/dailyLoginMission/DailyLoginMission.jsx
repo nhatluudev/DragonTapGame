@@ -13,7 +13,7 @@ export default function DailyLoginMission() {
     const { userInfo, setUserInfo } = useAuth();
     const { setModalInfo } = useModal();
     const [loginStreak, setLoginStreak] = useState(0); // Default to 0 if userInfo isn't ready
-    const loginStreakRewards = [500, 1000, 2500, 5000, 15000, 25000, 50000, 80000, 200000];
+    const loginStreakRewards = [500, 1000, 2500, 5000, 15000, 25000, 50000, 80000, 100000];
     const [hasLoggedInToday, setHasLoggedInToday] = useState(false); // Tracks if the user already logged in
     const [loading, setLoading] = useState(true); // Tracks the loading state
     const navigate = useNavigate();
@@ -44,7 +44,7 @@ export default function DailyLoginMission() {
     const handleLoginReward = async () => {
         try {
             const response = await apiUtils.post(`/users/getLoginReward`, { telegramId: userInfo?.telegramId });
-
+            console.log(response)
             if (response.data.success) {
                 setLoginStreak(); // Update login streak
                 setModalInfo({
@@ -55,6 +55,11 @@ export default function DailyLoginMission() {
                     ...userInfo, loginStreak: response.data.loginStreak, tokens: userInfo.tokens + response.data.reward
                 })
                 setHasLoggedInToday(true); // Set to true so the user can't claim twice
+            } else {
+                setModalInfo({
+                    status: "error",
+                    message: response.data.message
+                })
             }
         } catch (error) {
             console.error("Error claiming login reward:", error);
@@ -78,7 +83,7 @@ export default function DailyLoginMission() {
     }
 
     return (
-        <div className="overlay"  onClick={handleOverlayClick}>
+        <div className="overlay" onClick={handleOverlayClick}>
             <div className="modal-form type-1 daily-login-mission">
                 <h3 className="form__title">Điểm danh hằng ngày</h3>
                 <div onClick={() => navigate("/missions")}>

@@ -75,13 +75,25 @@ const updateUserMissions = async () => {
             status: 'pending', // Default status
             lastCheckTime: null, // Default last check time
           },
+          telegramNamiReaction: {
+            status: 'pending', // Default status
+            lastCheckTime: null, // Default last check time
+          },
           facebookReaction: {
-            status: 'pending',
-            lastCheckTime: null,
+            status: 'pending', // Default status
+            lastCheckTime: null, // Default last check time
+          },
+          facebookFanpageReaction: {
+            status: 'pending', // Default status
+            lastCheckTime: null, // Default last check time
+          },
+          facebookNamiFanpageReaction: {
+            status: 'pending', // Default status
+            lastCheckTime: null, // Default last check time
           },
           joinTelegramGroup: {
-            status: 'pending',
-            lastCheckTime: null,
+            status: 'pending', // Default status
+            lastCheckTime: null, // Default last check time
           },
         };
       }

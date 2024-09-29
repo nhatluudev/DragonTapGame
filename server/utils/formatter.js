@@ -11,8 +11,3 @@ export function formatNamiId(input) {
     // Combine the formatted prefix and the formatted suffix
     return formattedPrefix + formattedSuffix;
 }
-
-// // Example usage:
-// const userInput = "nAmi1234aCb891";
-// const formattedNamiId = formatNamiId(userInput);
-// console.log(formattedNamiId);  // Output: "Nami1234ACB891"

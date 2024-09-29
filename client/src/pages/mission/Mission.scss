@@ -1,5 +1,6 @@
 .mission {
     margin-bottom: 160px;
+
     .mission-container {
         .mission-item {
             display: flex;
@@ -15,6 +16,7 @@
             .mission-item--left {
                 display: flex;
                 align-items: center;
+                width: 70%;
 
                 .mission-item__title {
                     font-size: 1.5rem;
@@ -36,4 +38,24 @@
             .mission-item--right {}
         }
     }
+
+    .spinner-check-btn {
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid var(--gray-2-color);
+        border-radius: 50%;
+        width: 15px;
+        height: 15px;
+        animation: spinner-check-btn 1s linear infinite;
+    }
+
+    @keyframes spinner-check-btn {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
 }
