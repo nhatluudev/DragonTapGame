@@ -487,10 +487,47 @@ class UserController {
                 isKyc: false
             };
         }
-
-        // Refferal functionality
-        
     };
+
+    // Refferal functionality
+    recordReferral = async (req, res) => {
+        const { referrerTelegramId, userTelegramId, firstName, lastName } = req.body;
+
+        try {
+            // Find the referrer (User A) by their Telegram ID
+            const referrer = await User.findOne({ telegramId: referrerTelegramId });
+            if (!referrer) {
+                return res.status(404).json({ message: 'Referrer not found' });
+            }
+
+            // Use the createOrFetchUser method to get or initialize the referred user (User B)
+            let referredUser = await User.findOne({ telegramId: userTelegramId });
+
+            // If User B does not exist, use the same logic from your createOrFetchUser method
+            if (!referredUser) {
+                const referralCode = nanoid(8); // Generate a unique referral code
+                referredUser = new User({
+                    telegramId: userTelegramId,
+                    firstName,
+                    lastName,
+                    tokens: 0,
+                    referralCode,
+                });
+                await referredUser.save();
+            }
+
+            // Record the referral by adding User B's telegramId to referrer
+            if (!referrer.referrals.includes(userTelegramId)) {
+                referrer.referrals.push(userTelegramId);
+                await referrer.save();
+            }
+
+            return res.status(200).json({ message: 'Referral recorded successfully', referredUser });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Server error' });
+        }
+    }
 }
 
 export default new UserController();

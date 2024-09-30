@@ -19,4 +19,6 @@ userRouter.post("/startMission", asyncHandler(UserController.startMission))
 userRouter.post("/checkMission", asyncHandler(UserController.checkMission))
 userRouter.post("/rewardMission", asyncHandler(UserController.rewardMission))
 
+userRouter.post("/recordReferral", asyncHandler(UserController.recordReferral))
+
 export default userRouter;

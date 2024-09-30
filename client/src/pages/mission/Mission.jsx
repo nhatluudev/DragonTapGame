@@ -254,7 +254,7 @@ export default function Mission() {
     };
 
     const handleShare = () => {
-        const telegramUrl = 'https://t.me/share/url?url=https://t.me/qt_tap_bot';
+        const telegramUrl = `https://t.me/share/url?url=https://t.me/qt_tap_bot?start=${userInfo.telegramId}&text=%F0%9F%92%B0Come%20play%20Qt%20Tap%20and%20earn%20rewards!%0AJoin%20via%20my%20referral%20link!`;
         window.open(telegramUrl, '_blank');
     };
 

@@ -88,6 +88,46 @@ const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 bot.on("polling_error", (error) => {
   console.error(`Polling error: ${error.message}`);
 });
+
+// Listen for `/start` command with referral code
+// Listen for `/start` command with referral code
+bot.start((ctx) => {
+  const referralCode = ctx.startPayload; // This captures the 'start' parameter (User A's Telegram ID)
+  const userTelegramId = ctx.message.from.id; // User B's Telegram ID
+  const userFirstName = ctx.message.from.first_name; // User B's First Name
+  const userLastName = ctx.message.from.last_name; // User B's Last Name (if available)
+
+  // Log the referral (you can send this to your backend or save it in a database)
+  console.log(`User B (ID: ${userTelegramId}) was referred by User A (ID: ${referralCode})`);
+
+  // Save referral and create/fetch User B in the backend
+  axios.post(`${process.env.BACKEND_ENDPOINT}/users/createOrFetchUser`, {
+    telegramId: userTelegramId,
+    firstName: userFirstName || 'Anonymous', // Use 'Anonymous' if first name is missing
+    lastName: userLastName || '' // Last name is optional
+  })
+    .then(response => {
+      // If User B is created or fetched successfully, record the referral
+      axios.post(`${process.env.BACKEND_ENDPOINT}/users/recordReferral`, {
+        referrerTelegramId: referralCode,
+        userTelegramId: userTelegramId
+      })
+        .then(referralResponse => {
+          console.log('Referral recorded successfully', referralResponse.data);
+        })
+        .catch(error => {
+          console.error('Error recording referral', error);
+        });
+
+      // Send a welcome message to User B
+      ctx.reply(`Welcome to Qt Tap! You were referred by ${referralCode}.`);
+    })
+    .catch(error => {
+      console.error('Error creating or fetching user', error);
+      ctx.reply('There was an error processing your referral.');
+    });
+});
+
 bot.onText(/\/start/, (msg) => {
   console.log("TELEGRAM USER DATA");
   const chatId = msg.chat.id;
@@ -130,6 +170,8 @@ Tham gia tapping game để thu thập DRAS và nhận thưởng
 });
 console.log('Telegram bot is runninggg...');
 
+// Launch the bot
+bot.launch();
 
 // Init routes
 app.use('', router);
