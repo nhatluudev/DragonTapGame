@@ -220,6 +220,38 @@ bot.onText(/\/start(.*)/, (msg, match) => {
       console.error('Error creating or fetching user', error);
       bot.sendMessage(chatId, 'There was an error processing your request.');
     });
+
+  // Send the image first
+  const imageUrl = 'https://cdn.coin68.com/images/20240318103532-8be611af-cdb0-4313-84b6-8e4f015f3707-160.jpg'; // Replace with a valid public image URL
+  bot.sendPhoto(chatId, imageUrl, {
+    caption: "",
+  }).then(() => {
+    // After sending the image, send the message content
+    const message = `Hi ${username}, chào mừng bạn đến với DragonTap!
+
+  Tham gia tapping game để thu thập DRAS và nhận thưởng 
+  💰 1,000,000 DRAS hoàn toàn miễn phí
+  🏆 Hơn 1 tỷ tiền mặt
+  🌟 Kiếm lời khi niêm yết DRAS`;
+
+    bot.sendMessage(chatId, message, {
+      parse_mode: "Markdown", // To enable links and rich text formatting
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: '🚀 Chơi ngay',
+              web_app: {
+                url: process.env.NODE_ENV === 'production' ? process.env.NODE_CLIENT_ORIGIN : process.env.NODE_CLIENT_LOCAL_ORIGIN,
+              },
+            },
+          ],
+        ],
+      },
+    });
+  }).catch((err) => {
+    console.error("Error sending photo:", err);
+  });
 });
 
 console.log('Telegram bot is running...');
