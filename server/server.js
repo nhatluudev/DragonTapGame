@@ -87,9 +87,9 @@ mongoose.connect(process.env.MONGO_URI)
 // Initialize the bot
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
-bot.on("polling_error", (error) => {
-  console.error(`Polling error: ${error.message}`);
-});
+// bot.on("polling_error", (error) => {
+//   console.error(`Polling error: ${error.message}`);
+// });
 
 // // Listen for `/start` command with referral code
 // bot.onText(/\/start(.*)/, (msg, match) => {
