@@ -253,6 +253,11 @@ export default function Mission() {
         return timeDifference > FIVE_MINUTES;
     };
 
+    const handleShare = () => {
+        const telegramUrl = 'https://t.me/share/url?url=https://t.me/qt_tap_bot';
+        window.open(telegramUrl, '_blank');
+    };
+
     // Show a loading spinner or message while data is being fetched
     if (isLoading) {
         return (
@@ -687,6 +692,10 @@ export default function Mission() {
                             )}
                         </div>
                     </a>
+
+                    <button onClick={handleShare}>
+                        Share with Telegram
+                    </button>
                 </div>
             </section>
             <Outlet />
