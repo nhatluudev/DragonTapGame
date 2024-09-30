@@ -179,21 +179,14 @@ bot.on("polling_error", (error) => {
 // });
 
 // Listen for `/start` command without a referral code
-bot.onText(/\/start(.*)/, (msg, match) => {
-  console.log("TELEGRAM USER DATA");
-  const username = msg.from.first_name || 'Guest';
-  console.log(chatId);
-  console.log(username);
-  console.log(process.env.NODE_CLIENT_ORIGIN);
-
+bot.onText(/\/start (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
   const userTelegramId = msg.from.id; // User B's Telegram ID
-  // const userFirstName = msg.from.first_name || 'Anonymous'; // User B's First Name
-  // const userLastName = msg.from.last_name || ''; // User B's Last Name
-  const referralCode = match[1] ? match[1].trim() : null; // Extract the referral code (User A's Telegram ID)
+  const userFirstName = msg.from.first_name || 'Anonymous'; // User B's First Name
+  const referralCode = match[1]; // Extract referral code (User A's Telegram ID)
 
-  // Log the referral (you can send this to your backend or save it in a database)
-  console.log(`User B (ID: ${userTelegramId}) was referred by User A (ID: ${referralCode})`);
+  // Log the referral code (you can send this to your backend or save it in a database)
+  console.log(`User B (ID: ${userTelegramId}) was referred by User A (Referral Code: ${referralCode})`);
 
   // Send the image first
   const imageUrl = 'https://cdn.coin68.com/images/20240318103532-8be611af-cdb0-4313-84b6-8e4f015f3707-160.jpg'; // Replace with a valid public image URL
