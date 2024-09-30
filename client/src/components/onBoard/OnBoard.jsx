@@ -13,7 +13,7 @@ export default function OnBoard() {
             <div className="on-board__content text-align-center">
                 <h3>Chào mừng bạn đến với</h3>
                 <h1>DRAGON TAP</h1>
-                <h3>Chinh phục thử thách và nhận thưởng lên đến xxxxx</h3>
+                <h3>Chinh phục thử thách và nhận thưởng</h3>
             </div>
         </div>
     )

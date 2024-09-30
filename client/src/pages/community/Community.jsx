@@ -22,7 +22,7 @@ export default function Community() {
                     Nơi chia sẻ kinh nghiệm đầu tư và Lorem Ipsum is simply dummy text of the printing and typesetting industry.
                 </h3>
                 <hr />
-                <p className="annotation">Hơn <span className="highlight-green-text fw-bold">1.800+</span> thành viên mới đã gia nhập cộng đồng T2Capital</p>
+                <p className="annotation">Hơn <span className="highlight-green-text fw-bold">1,000+</span> thành viên mới đã gia nhập cộng đồng T2Capital</p>
                 <div className="flex-justify-center">
                     <div className="community__main__member-container">
                         <img src={UserAvatar1} className="community__main__member-item" alt="" />

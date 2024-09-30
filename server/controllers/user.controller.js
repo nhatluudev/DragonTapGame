@@ -185,7 +185,7 @@ class UserController {
 
     // Function to get the reward for the current day
     static getRewardForDay(streak) {
-        const rewards = [500, 1000, 2500, 5000, 15000, 25000, 50000, 80000, 100000]; // Example rewards
+        const rewards = [500, 1000, 2500, 5000, 15000, 25000, 50000, 80000, 200000]; // Example rewards
         return rewards[streak - 1] || rewards[rewards.length - 1]; // Return reward for the current streak day or cap at the max reward
     }
 
@@ -393,13 +393,11 @@ class UserController {
             user.tokens += tokensEarned;
             console.log(tokensEarned)
             console.log(user.tokens)
-
             await user.save();
 
             // Return the result in the response
             return res.json({
-                isInCommunity: memberStatus.isInCommunity,
-                isKyc: memberStatus.isKyc
+                user
             });
         } catch (error) {
             console.error('Error in checkKyc:', error);
@@ -489,6 +487,9 @@ class UserController {
                 isKyc: false
             };
         }
+
+        // Refferal functionality
+        
     };
 }
 

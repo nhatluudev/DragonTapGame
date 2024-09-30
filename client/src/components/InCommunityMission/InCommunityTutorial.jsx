@@ -27,14 +27,14 @@ export default function InCommunityTutorial() {
 
                 <h3 className="form__title">Hướng dẫn gia nhập T2Capital</h3>
                 <br />
-                <p>B1: Download app Nami Exchange <Link to="https://nami.exchange/ref/DRAGOTAP" target="_blank" rel="noopener noreferrer">tại đây</Link></p>
+                <p>B1: Đăng kí tài khoản Nami <Link to="https://nami.exchange/ref/DRAGOTAP" className="highlight-text green underlined fw-bold" target="_blank" rel="noopener noreferrer">tại đây</Link></p>
                 <img src={JoinNamiTutorial1} alt="" />
                 <br />
 
                 <p>B2: Ở mục tài khoản, chọn "Cá nhân"</p>
                 <img src={JoinNamiTutorial2} alt="" />
 
-                <p>B3: Copy mã giới thiệu và dán vào DragonTap</p>
+                <p>B3: Copy Nami ID của bạn và dán vào DragonTap</p>
                 <img src={JoinNamiTutorial3} alt="" />
 
                 <button onClick={() => navigate("/missions/check-in-community")} className="btn btn-lg btn-4 w-100 mt-28">

@@ -55,9 +55,12 @@ export default function Rank() {
             </section>
 
             <section className="rank__statistic text-align-center mb-20">
-                <h4 className="flex-align-self-start mb-20">
-                    BXH sẽ đóng và trao thưởng cho T2-er khi đạt 100,000 người chơi
+                <h4 className="flex-align-self-start mb-12">
+                    DragonTap sẽ tổng kết BXH và trao thưởng cho người chơi hợp lệ
                 </h4>
+                <p className="annotation mb-12">
+                    Tham gia Nami để trở thành một tài khoản hợp lệ và nhận các phần quà đặc biệt sau mỗi chu kỳ trò chơi
+                </p>
                 <div className="rank__statistic-container">
                     <div className="rank__statistic-item">
                         <div>
@@ -68,19 +71,69 @@ export default function Rank() {
                     <hr />
                     <div className="rank__statistic-item">
                         <div>
-                            <strong className="rank__statistic-item__title">3,000,000+</strong>
+                            <strong className="rank__statistic-item__title">{Math.ceil(0.4 * totalUsers)}+</strong>
                         </div>
-                        <div className="rank__statistic-item__sub-title annotation">tokens</div>
+                        <div className="rank__statistic-item__sub-title annotation">người chơi hợp lệ</div>
                     </div>
                     <hr />
                     <div className="rank__statistic-item">
                         <div>
-                            <strong className="rank__statistic-item__title">150M+ VND</strong>
+                            <strong className="rank__statistic-item__title">2K USD</strong>
                         </div>
                         <div className="rank__statistic-item__sub-title annotation">tiền thưởng</div>
                     </div>
                 </div>
             </section >
+
+            <section className="mb-12">
+                <div className="rank__statistic-container">
+                    <div className="rank__statistic-item">
+                        <div>
+                            <strong className="rank__statistic-item__title">Mốc 01</strong>
+                        </div>
+                        <div className="rank__statistic-item__sub-title annotation">50,000 người dùng</div>
+                    </div>
+
+                    <hr />
+
+                    <div className="rank__statistic-item">
+                        <div>
+                            <strong className="rank__statistic-item__title">Mốc 01</strong>
+                        </div>
+                        <div className="rank__statistic-item__sub-title annotation">50,000 người dùng</div>
+                    </div>
+
+                    <div className="rank__statistic-item">
+                        <div>
+                            <strong className="rank__statistic-item__title">Mốc 01</strong>
+                        </div>
+                        <div className="rank__statistic-item__sub-title annotation">50,000 người dùng</div>
+                    </div>
+
+
+                    <div className="rank__statistic-item">
+                        <div>
+                            <strong className="rank__statistic-item__title">{Math.ceil(0.4 * totalUsers)}+</strong>
+                        </div>
+                        <div className="rank__statistic-item__sub-title annotation">người chơi hợp lệ</div>
+                    </div>
+                    <hr />
+                    <div className="rank__statistic-item">
+                        <div>
+                            <strong className="rank__statistic-item__title">2K USD</strong>
+                        </div>
+                        <div className="rank__statistic-item__sub-title annotation">tiền thưởng</div>
+                    </div>
+                </div>
+
+                <br />
+                Mốc 02: 100,000 người dùng
+                <br />
+                Mốc 03: 150,000 người dùng
+                <br />
+                Mốc 04: 200,000 người dùng
+                Mốc 05: 250,000 người dùng
+            </section>
 
             <section className="rank__leader-board">
                 <table>

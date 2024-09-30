@@ -191,9 +191,10 @@ export default function Mission() {
     };
 
     const handleCheckMission = async (missionType) => {
-        // Set the loading state for the clicked mission
+        // Set the loading state for the clicked mission before making the request
         setIsCheckingMission((prev) => ({ ...prev, [missionType]: true }));
-        // Simulate the loading delay (4 seconds)
+
+        // Proceed with the backend request after a 4-second simulated delay
         setTimeout(async () => {
             try {
                 const response = await apiUtils.post('/users/checkMission', { telegramId, missionType });
@@ -203,10 +204,10 @@ export default function Mission() {
             } catch (error) {
                 console.error("Error checking the mission:", error);
             } finally {
-                // After the check is complete, reset the loading state
+                // After the check is complete, reset the loading state to false
                 setIsCheckingMission((prev) => ({ ...prev, [missionType]: false }));
             }
-        }, 2000); // 4 seconds delay for the spinner effect
+        }, 4000); // 4 seconds delay for the spinner effect
     };
 
     const handleRewardMission = async (missionType) => {
@@ -291,7 +292,7 @@ export default function Mission() {
                                     </strong>
                                 </div>
                                 <span className="mission-item__sub-title flex-align-center"><img src={TokenIcon} className="token-ic sm mr-4" />
-                                    <strong>+5,000</strong>
+                                    <strong>+379,000</strong>
                                 </span>
                             </div>
                         </div>
@@ -321,16 +322,7 @@ export default function Mission() {
                             </button>
                         </div>
                     </div>
-                </div>
-            </section>
 
-            <section className="mission__daily mb-24">
-                <h2 className="section__title">
-                    <img src={GoalIcon} className="section__ic" alt="" />
-                    Nhiệm vụ cộng đồng
-                </h2>
-
-                <div className="mission-container">
                     <a href="https://t.me/FuturesSignalVipPro" target="_blank" rel="noopener noreferrer" className="mission-item" onClick={(e) => userInfo?.missions?.telegramReaction?.status === "pending" ? handleStartMission('telegramReaction') : null}>
                         <div className="mission-item--left">
                             <img src={TelegramIcon} alt="" className="mission-item__ic" />
@@ -432,11 +424,11 @@ export default function Mission() {
                         </div>
                     </a>
 
-                    <a href="https://t.me/ThongbaotuNami" target="_blank" rel="noopener noreferrer" className="mission-item" onClick={() => userInfo?.missions?.facebookReaction?.status == "pending" ? handleStartMission('facebookReaction') : null}>
+                    <a href="https://www.facebook.com/share/g/rfrPxcrH8WYbZwSi/?mibextid=K35XfP" target="_blank" rel="noopener noreferrer" className="mission-item" onClick={() => userInfo?.missions?.facebookReaction?.status == "pending" ? handleStartMission('facebookReaction') : null}>
                         <div className="mission-item--left">
                             <img src={FacebookIcon} alt="" className="mission-item__ic" />
                             <div>
-                                <strong className="mission-item__title">Phản ứng bài viết mới nhất ở Facebook</strong>
+                                <strong className="mission-item__title">Phản ứng bài viết mới nhất ở Facebook Nami</strong>
                                 <span className="mission-item__sub-title flex-align-center">
                                     <img src={TokenIcon} className="token-ic sm mr-4" />
                                     <strong>+2,500</strong>

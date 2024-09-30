@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: null,
     },
+    referredBy: { type: String, default: "" }, // Store telegram id of the referral user
     lastTenMinCheckIn: { type: Date, default: null }, // For the 10-minute mission
     isInCommunity: { type: Boolean, default: false },
     isKyc: { type: Boolean, default: false },

@@ -3,9 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 
 // Styling and assets
 import "./KycTutorial.scss";
-import KycTutorial1 from "../../assets/img/join-nami-1.png"
-import KycTutorial2 from "../../assets/img/join-nami-2.png"
-import KycTutorial3 from "../../assets/img/join-nami-3.png"
+import KycTutorial1 from "../../assets/img/kyc-1.png"
+import KycTutorial2 from "../../assets/img/kyc-2.png"
+import KycTutorial3 from "../../assets/img/kyc-3.png"
+import KycTutorial4 from "../../assets/img/kyc-4.png"
+import KycTutorial5 from "../../assets/img/kyc-5.png"
+import KycTutorial6 from "../../assets/img/kyc-6.png"
+import KycTutorial7 from "../../assets/img/kyc-7.png"
+
 import { apiUtils } from "../../utils/newRequest";
 import { useAuth } from "../../contexts/auth/AuthContext";
 
@@ -28,15 +33,24 @@ export default function KycTutorial() {
 
                 <h3 className="form__title">Hướng dẫn KYC</h3>
                 <br />
-                <p>B1: Vào app Nami Exchange, chọn avatar</p>
-                <img src={KycTutorial1} alt="" />
-                <br />
-
-                <p>B2: Ở mục tài khoản, chọn "Cá nhân"</p>
+                <p className="text-align-justify">B1: Truy cập app Nami Exchange</p>
+                <p className="text-align-justify">B2: Chọn cập nhật phiên bản mới nhất nếu có thông báo. Vui lòng không thoát app để update lên 100% (không di chuyển đa nhiệm)</p>
                 <img src={KycTutorial2} alt="" />
 
-                <p>B3: Copy mã giới thiệu và dán vào DragonTap</p>
+                <p>B3: Nhấn "Khởi Động Lại" App khi nhận dc thông báo Update thành công</p>
                 <img src={KycTutorial3} alt="" />
+                <img src={KycTutorial4} alt="" />
+
+                <p>B4: Tiến hành xác minh tài khoản và liên kết thanh toán</p>
+                <img src={KycTutorial5} alt="" />
+                <img src={KycTutorial6} alt="" />
+
+                <p className="text-align-justify">B5: Xác thực giấy tờ tùy thân và quay video nhận diện khuôn mặt để hoàn tất thủ tục KYC.
+                    Lưu ý cầm giấy tờ rõ nét và nhìn trái phải trên dưới.
+                </p>
+                <img src={KycTutorial7} alt="" />
+
+                <p>B6: Copy Nami ID của bạn và dán vào DragonTap</p>
 
                 <button onClick={() => navigate("/missions/check-kyc")} className="btn btn-lg btn-4 w-100 mt-28">
                     Đi đến nhập mã

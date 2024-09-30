@@ -69,34 +69,35 @@ const updateUserMissions = async () => {
 
     for (const user of usersToUpdate) {
       // Add the missions field if it's not present
-      if (user.missions) {
-        user.missions = {
-          telegramReaction: {
-            status: 'pending', // Default status
-            lastCheckTime: null, // Default last check time
-          },
-          telegramNamiReaction: {
-            status: 'pending', // Default status
-            lastCheckTime: null, // Default last check time
-          },
-          facebookReaction: {
-            status: 'pending', // Default status
-            lastCheckTime: null, // Default last check time
-          },
-          facebookFanpageReaction: {
-            status: 'pending', // Default status
-            lastCheckTime: null, // Default last check time
-          },
-          facebookNamiFanpageReaction: {
-            status: 'pending', // Default status
-            lastCheckTime: null, // Default last check time
-          },
-          joinTelegramGroup: {
-            status: 'pending', // Default status
-            lastCheckTime: null, // Default last check time
-          },
-        };
-      }
+      user.referredBy = "";
+      // if (user.missions) {
+      //   user.missions = {
+      //     telegramReaction: {
+      //       status: 'pending', // Default status
+      //       lastCheckTime: null, // Default last check time
+      //     },
+      //     telegramNamiReaction: {
+      //       status: 'pending', // Default status
+      //       lastCheckTime: null, // Default last check time
+      //     },
+      //     facebookReaction: {
+      //       status: 'pending', // Default status
+      //       lastCheckTime: null, // Default last check time
+      //     },
+      //     facebookFanpageReaction: {
+      //       status: 'pending', // Default status
+      //       lastCheckTime: null, // Default last check time
+      //     },
+      //     facebookNamiFanpageReaction: {
+      //       status: 'pending', // Default status
+      //       lastCheckTime: null, // Default last check time
+      //     },
+      //     joinTelegramGroup: {
+      //       status: 'pending', // Default status
+      //       lastCheckTime: null, // Default last check time
+      //     },
+      //   };
+      // }
 
       // Save the updated user
       await user.save();

@@ -52,13 +52,13 @@ export default function InCommunityMission() {
         try {
             const response = await apiUtils.post(`/users/checkMemberStatus`, { namiId: inputs.namiId, telegramId: userInfo.telegramId });
             console.log(response)
-            if (response.data.isInCommunity) {
+            if (response.data.user.isInCommunity) {
                 setModalInfo({
                     status: "success",
                     message: "Nhiệm vụ gia nhập T2Capital đã hoàn tất"
                 })
                 navigate("/missions")
-                setUserInfo({ ...userInfo, isInCommunity: response.data.isInCommunity, isKyc: response.data.isKyc});
+                setUserInfo(response.data.user);
             } else {
                 setModalInfo({
                     status: "error",
@@ -92,11 +92,11 @@ export default function InCommunityMission() {
                     </svg>
                 </div>
                 <br />
-                <div className="annotation">
+                <div className="annotation mt-4 mb-4">
                     Nhập Nami ID của bạn để hệ thống kiểm tra.
                 </div>
                 <div className="annotation">
-                    <Link to="/missions/check-in-community/check-in-community-tutorial" className="highlight-text green underlined">Xem hướng dẫn</Link>
+                    <Link to="/missions/check-in-community/check-in-community-tutorial" className="highlight-text green underlined fw-bold">Xem hướng dẫn</Link>
                 </div>
 
                 <div className="form-field">

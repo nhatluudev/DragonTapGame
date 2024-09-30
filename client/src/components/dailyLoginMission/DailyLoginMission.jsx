@@ -13,7 +13,7 @@ export default function DailyLoginMission() {
     const { userInfo, setUserInfo } = useAuth();
     const { setModalInfo } = useModal();
     const [loginStreak, setLoginStreak] = useState(0); // Default to 0 if userInfo isn't ready
-    const loginStreakRewards = [500, 1000, 2500, 5000, 15000, 25000, 50000, 80000, 100000];
+    const loginStreakRewards = [500, 1000, 2500, 5000, 15000, 25000, 50000, 80000, 200000];
     const [hasLoggedInToday, setHasLoggedInToday] = useState(false); // Tracks if the user already logged in
     const [loading, setLoading] = useState(true); // Tracks the loading state
     const navigate = useNavigate();

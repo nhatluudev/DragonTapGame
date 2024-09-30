@@ -53,13 +53,13 @@ export default function KycMission() {
         try {
             const response = await apiUtils.post(`/users/checkMemberStatus`, { namiId: inputs.namiId, telegramId: userInfo.telegramId });
             console.log(response)
-            if (response.data.isInCommunity && response.data.isKyc) {
+            if (response.data.user.isInCommunity && response.data.user.isKyc) {
                 setModalInfo({
                     status: "success",
                     message: "Xác thực KYC thành công"
                 })
                 navigate("/missions")
-                setUserInfo({ ...userInfo, isKyc: true });
+                setUserInfo(response.data.user);
             } else {
                 setModalInfo({
                     status: "error",
@@ -93,11 +93,11 @@ export default function KycMission() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                     </svg>
                 </div>
-                <div className="annotation mt-12">
+                <div className="annotation mt-4 mb-4">
                     Nhập Nami ID của bạn để hệ thống kiểm tra.
                 </div>
                 <div className="annotation">
-                    <Link to="/missions/check-kyc/kyc-tutorial" className="highlight-text green underlined">Xem hướng dẫn</Link>
+                    <Link to="/missions/check-kyc/kyc-tutorial" className="highlight-text green underlined fw-bold">Xem hướng dẫn</Link>
                 </div>
 
                 <div className="form-field">
