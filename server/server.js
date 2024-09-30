@@ -170,90 +170,87 @@ bot.on("polling_error", (error) => {
 // });
 
 // Listen for `/start` command with referral code
-bot.onText(/\/start(.*)/, (msg, match) => {
-  const chatId = msg.chat.id;
-  const userTelegramId = msg.from.id; // User B's Telegram ID
-  const userFirstName = msg.from.first_name || 'Anonymous'; // User B's First Name
-  const userLastName = msg.from.last_name || ''; // User B's Last Name
-  const referralCode = match[1] ? match[1].trim() : null; // Extract the referral code (User A's Telegram ID)
-
-  // Log the referral (you can send this to your backend or save it in a database)
-  console.log(`User B (ID: ${userTelegramId}) was referred by User A (ID: ${referralCode})`);
-
-  // Save referral and create/fetch User B in the backend
-  axios.post(`${process.env.BACKEND_ENDPOINT}/users/createOrFetchUser`, {
-    telegramId: userTelegramId,
-    firstName: userFirstName,
-    lastName: userLastName
-  })
-    .then(response => {
-      // If User B is created or fetched successfully, record the referral
-      if (referralCode) {
-        axios.post(`${process.env.BACKEND_ENDPOINT}/users/recordReferral`, {
-          referrerTelegramId: referralCode,
-          userTelegramId: userTelegramId
-        })
-          .then(referralResponse => {
-            console.log('Referral recorded successfully', referralResponse.data);
-          })
-          .catch(error => {
-            console.error('Error recording referral', error);
-          });
-      }
-
-      // Send a welcome message to User B
-      bot.sendMessage(chatId, `Welcome to Qt Tap! You were referred by ${referralCode || 'nobody'}.`);
-    })
-    .catch(error => {
-      console.error('Error creating or fetching user', error);
-      bot.sendMessage(chatId, 'There was an error processing your referral.');
-    });
-});
-
-// // Listen for `/start` command without a referral code
-// bot.onText(/\/start/, (msg) => {
-//   console.log("TELEGRAM USER DATA");
+// bot.onText(/\/start(.*)/, (msg, match) => {
 //   const chatId = msg.chat.id;
-//   const username = msg.from.first_name || 'Guest';
-//   console.log(chatId);
-//   console.log(username);
-//   console.log(process.env.NODE_CLIENT_ORIGIN);
+//   const userTelegramId = msg.from.id; // User B's Telegram ID
+//   const userFirstName = msg.from.first_name || 'Anonymous'; // User B's First Name
+//   const userLastName = msg.from.last_name || ''; // User B's Last Name
+//   const referralCode = match[1] ? match[1].trim() : null; // Extract the referral code (User A's Telegram ID)
 
-//   // Send the image first
-//   const imageUrl = 'https://cdn.coin68.com/images/20240318103532-8be611af-cdb0-4313-84b6-8e4f015f3707-160.jpg'; // Replace with a valid public image URL
-//   bot.sendPhoto(chatId, imageUrl, {
-//     caption: "",
-//   }).then(() => {
-//     // After sending the image, send the message content
-//     const message = `Hi ${username}, chào mừng bạn đến với DragonTap!
+//   // Log the referral (you can send this to your backend or save it in a database)
+//   console.log(`User B (ID: ${userTelegramId}) was referred by User A (ID: ${referralCode})`);
 
-// Tham gia tapping game để thu thập DRAS và nhận thưởng 
-// 💰 1,000,000 DRAS hoàn toàn miễn phí
-// 🏆 Hơn 1 tỷ tiền mặt
-// 🌟 Kiếm lời khi niêm yết DRAS`;
+//   // Save referral and create/fetch User B in the backend
+//   axios.post(`${process.env.BACKEND_ENDPOINT}/users/createOrFetchUser`, {
+//     telegramId: userTelegramId,
+//     firstName: userFirstName,
+//     lastName: userLastName
+//   })
+//     .then(response => {
+//       // If User B is created or fetched successfully, record the referral
+//       if (referralCode) {
+//         axios.post(`${process.env.BACKEND_ENDPOINT}/users/recordReferral`, {
+//           referrerTelegramId: referralCode,
+//           userTelegramId: userTelegramId
+//         })
+//           .then(referralResponse => {
+//             console.log('Referral recorded successfully', referralResponse.data);
+//           })
+//           .catch(error => {
+//             console.error('Error recording referral', error);
+//           });
+//       }
 
-//     bot.sendMessage(chatId, message, {
-//       parse_mode: "Markdown", // To enable links and rich text formatting
-//       reply_markup: {
-//         inline_keyboard: [
-//           [
-//             {
-//               text: '🚀 Chơi ngay',
-//               web_app: {
-//                 url: process.env.NODE_ENV === 'production' ? process.env.NODE_CLIENT_ORIGIN : process.env.NODE_CLIENT_LOCAL_ORIGIN,
-//               },
-//             },
-//           ],
-//         ],
-//       },
+//       // Send a welcome message to User B
+//       bot.sendMessage(chatId, `Welcome to Qt Tap! You were referred by ${referralCode || 'nobody'}.`);
+//     })
+//     .catch(error => {
+//       console.error('Error creating or fetching user', error);
+//       bot.sendMessage(chatId, 'There was an error processing your referral.');
 //     });
-//   }).catch((err) => {
-//     console.error("Error sending photo:", err);
-//   });
 // });
 
+// Listen for `/start` command without a referral code
+bot.onText(/\/start/, (msg) => {
+  console.log("TELEGRAM USER DATA");
+  const chatId = msg.chat.id;
+  const username = msg.from.first_name || 'Guest';
+  console.log(chatId);
+  console.log(username);
+  console.log(process.env.NODE_CLIENT_ORIGIN);
 
+  // Send the image first
+  const imageUrl = 'https://cdn.coin68.com/images/20240318103532-8be611af-cdb0-4313-84b6-8e4f015f3707-160.jpg'; // Replace with a valid public image URL
+  bot.sendPhoto(chatId, imageUrl, {
+    caption: "",
+  }).then(() => {
+    // After sending the image, send the message content
+    const message = `Hi ${username}, chào mừng bạn đến với DragonTap!
 
+Tham gia tapping game để thu thập DRAS và nhận thưởng 
+💰 1,000,000 DRAS hoàn toàn miễn phí
+🏆 Hơn 1 tỷ tiền mặt
+🌟 Kiếm lời khi niêm yết DRAS`;
+
+    bot.sendMessage(chatId, message, {
+      parse_mode: "Markdown", // To enable links and rich text formatting
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: '🚀 Chơi ngay',
+              web_app: {
+                url: process.env.NODE_ENV === 'production' ? process.env.NODE_CLIENT_ORIGIN : process.env.NODE_CLIENT_LOCAL_ORIGIN,
+              },
+            },
+          ],
+        ],
+      },
+    });
+  }).catch((err) => {
+    console.error("Error sending photo:", err);
+  });
+});
 
 console.log('Telegram bot is running...');
 
