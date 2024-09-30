@@ -182,7 +182,7 @@ bot.on("polling_error", (error) => {
 bot.onText(/\/start (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
   const userTelegramId = msg.from.id; // User B's Telegram ID
-  const userFirstName = msg.from.first_name || 'Anonymous'; // User B's First Name
+  const username = msg.from.first_name || 'Anonymous'; // User B's First Name
   const referralCode = match[1]; // Extract referral code (User A's Telegram ID)
 
   // Log the referral code (you can send this to your backend or save it in a database)
