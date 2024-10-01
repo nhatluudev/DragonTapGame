@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import TelegramBot from 'node-telegram-bot-api'; // Import TelegramBot
-
+import axios from "axios"
 import router from './routes/index.js';
 
 dotenv.config();
