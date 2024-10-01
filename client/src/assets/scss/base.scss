@@ -7,6 +7,7 @@
     --white-color: white;
     --highlight-red-color: rgb(254, 56, 56);
     --highlight-green-color: #30AD5B;
+    --light-green-color: #64f6b8;
     --overlay-bg-color: rgba(2, 2, 2, 0.8);
 }
 
@@ -348,7 +349,7 @@ img {
     }
 
     &.green {
-        color: var(--highlight-green-color);
+        color: var(--light-green-color);
     }
 
     &.underlined {
@@ -760,5 +761,35 @@ section {
 
     100% {
         transform: rotate(360deg);
+    }
+}
+
+.statistic {
+    padding: 18px 28px 26px;
+
+    .statistic-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        hr {
+            height: 28px;
+            width: 1px;
+            background-color: var(--gray-2-color);
+        }
+
+        .statistic-item {
+            .statistic-item__title {
+                display: block;
+                text-align: center;
+                font-size: 1.6rem;
+            }
+
+            .statistic-item__sub-title {
+                display: block;
+                text-align: center;
+                margin-top: 4px;
+            }
+        }
     }
 }

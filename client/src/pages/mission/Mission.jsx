@@ -52,43 +52,18 @@ export default function Mission() {
 
     // Sync with context tokens when userInfo changes
     useEffect(() => {
-        if (userInfo?.tokens) {
+        if (userInfo?.tokens && userTokens !== userInfo.tokens) {
             setUserTokens(userInfo.tokens);
         }
-    }, [userInfo]);
-
-
-
-
-    useEffect(() => {
-        // On page load, check the last check-in status from the server
-        const checkTenMinCheckInStatus = async () => {
-            try {
-                console.log(telegramId)
-                const response = await apiUtils.get(`/users/tenMinCheckInStatus/${telegramId}`);
-                const { canCheckIn, remainingTime } = response.data;
-
-                setCanCheckIn(canCheckIn); // Update button state
-                setCheckInCooldown(remainingTime * 60); // Set cooldown (in seconds) if needed
-            } catch (error) {
-                console.error("Error fetching check-in status:", error);
-            }
-        };
-
-        if (telegramId) {
-            checkTenMinCheckInStatus();
-        }
-    }, [telegramId]);
-
+    }, [userInfo, userTokens]);
 
     // Function to check if the user has already logged in today
-    // Function to check the login status
     const checkLoginStatus = async () => {
         try {
             const response = await apiUtils.get(`/users/checkLoginStatus/${userInfo?.telegramId}`);
             setHasLoggedInToday(response.data.hasLoggedInToday);
         } catch (error) {
-            console.error("Error started login status:", error);
+            console.error("Error checking login status:", error);
         }
     };
 
@@ -104,25 +79,21 @@ export default function Mission() {
         }
     };
 
-    // Update loginStreak and streakRewards when userInfo becomes available
+    // Fetch all essential data before rendering
     useEffect(() => {
-        if (userInfo) {
-            checkLoginStatus();
-        }
-    }, [userInfo]);
+        const fetchEssentialData = async () => {
+            if (telegramId) {
+                await Promise.all([checkLoginStatus(), checkTenMinCheckInStatus()]);
+                setIsLoading(false); // Set loading to false after data fetch is complete
+            }
+        };
 
+        const debounceFetch = setTimeout(() => {
+            fetchEssentialData();
+        }, 300); // Debounce fetching data to prevent too many requests
 
-    useEffect(() => {
-        // If cooldown time is set, start a timeout to reset canCheckIn after 10 minutes
-        if (checkInCooldown > 0) {
-            const timeoutId = setTimeout(() => {
-                setCanCheckIn(true);
-                setCheckInCooldown(0);
-            }, checkInCooldown * 10000); // Convert seconds to milliseconds
-
-            return () => clearTimeout(timeoutId); // Cleanup
-        }
-    }, [checkInCooldown]);
+        return () => clearTimeout(debounceFetch); // Cleanup debounce on unmount
+    }, [telegramId]);
 
     const handleTenMinCheckIn = async () => {
         setIsTenMinuteCheckInLoading(true);
@@ -157,33 +128,22 @@ export default function Mission() {
         }
     };
 
-    // Fetch all essential data before rendering
-    useEffect(() => {
-        const fetchEssentialData = async () => {
-            if (telegramId) {
-                await Promise.all([checkLoginStatus(), checkTenMinCheckInStatus()]);
-                setIsLoading(false); // Set loading to false after data fetch is complete
-            }
-        };
-        fetchEssentialData();
-    }, [telegramId]);
-
     const handleStartMission = async (missionType) => {
-        console.log(missionType)
+        console.log(missionType);
         // Proceed with the backend request to start the mission
         try {
-            if (missionType == "joinTelegramGroup" && !userInfo.isInCommunity) {
+            if (missionType === "joinTelegramGroup" && !userInfo.isInCommunity) {
                 setModalInfo({
                     status: "error",
                     message: "Vui lòng gia nhập T2Capital và KYC tài khoản trước"
-                })
+                });
                 return;
             }
             const response = await apiUtils.post('/users/startMission', { telegramId, missionType });
-            console.log(response)
+            console.log(response);
 
             if (response.data) {
-                setUserInfo(response.data.user)
+                setUserInfo(response.data.user);
             }
         } catch (error) {
             console.error("Error starting the mission:", error);
@@ -211,21 +171,20 @@ export default function Mission() {
     };
 
     const handleRewardMission = async (missionType) => {
-        // Proceed with the backend request to start the mission
-        console.log(missionType)
+        console.log(missionType);
         try {
             const response = await apiUtils.post('/users/rewardMission', { telegramId, missionType });
-            console.log(response)
+            console.log(response);
 
             if (response.data) {
-                setUserInfo(response.data.user)
+                setUserInfo(response.data.user);
                 setModalInfo({
                     status: "success",
                     message: "Nhận thưởng thành công"
-                })
+                });
             }
         } catch (error) {
-            console.error("Error checking the mission:", error);
+            console.error("Error rewarding the mission:", error);
         }
     };
 
@@ -247,15 +206,10 @@ export default function Mission() {
         // Calculate the difference in milliseconds
         const timeDifference = now - localLastCheckTime.getTime(); // Subtract the timestamps
 
-        console.log(timeDifference)
+        console.log(timeDifference);
 
         // Return true if more than 5 minutes have passed
         return timeDifference > FIVE_MINUTES;
-    };
-
-    const handleShare = () => {
-        const telegramUrl = `https://t.me/share/url?url=https://t.me/qt_tap_bot?start=${userInfo.telegramId}&text=%F0%9F%92%B0Come%20play%20Qt%20Tap%20and%20earn%20rewards!%0AJoin%20via%20my%20referral%20link!`;
-        window.open(telegramUrl, '_blank');
     };
 
     // Show a loading spinner or message while data is being fetched
@@ -265,14 +219,8 @@ export default function Mission() {
                 <div className="loading-spinner"></div>
                 <h3>Đang tải ...</h3>
             </div>
-        )
+        );
     }
-
-    const currentDate = new Date();
-    const pastDate = new Date("2024-09-29T09:41:35+07:00");
-    const differenceInMilliseconds = currentDate - pastDate;
-    console.log(differenceInMilliseconds / (1000 * 60 * 60))
-
     return (
         <div className="mission">
             <section className="header flex-justify-center flex-align-center mb-20">
@@ -692,10 +640,6 @@ export default function Mission() {
                             )}
                         </div>
                     </a>
-
-                    <button onClick={handleShare}>
-                        Share with Telegram
-                    </button>
                 </div>
             </section>
             <Outlet />

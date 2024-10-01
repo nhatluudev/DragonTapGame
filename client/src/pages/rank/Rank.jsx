@@ -54,85 +54,83 @@ export default function Rank() {
                 </h2>
             </section>
 
-            <section className="rank__statistic text-align-center mb-20">
+            <section className="statistic text-align-center mb-12">
                 <h4 className="flex-align-self-start mb-12">
-                    DragonTap sẽ tổng kết BXH và trao thưởng cho người chơi hợp lệ
+                    DragonTap sẽ tổng kết BXH và trao thưởng cho những người chơi hợp lệ
                 </h4>
                 <p className="annotation mb-12">
                     Tham gia Nami để trở thành một tài khoản hợp lệ và nhận các phần quà đặc biệt sau mỗi chu kỳ trò chơi
                 </p>
-                <div className="rank__statistic-container">
-                    <div className="rank__statistic-item">
+                <div className="statistic-container">
+                    <div className="statistic-item">
                         <div>
-                            <strong className="rank__statistic-item__title">{formatFloat(totalUsers)}+</strong>
+                            <strong className="statistic-item__title">{formatFloat(totalUsers)}+</strong>
                         </div>
-                        <div className="rank__statistic-item__sub-title annotation">người chơi</div>
+                        <div className="statistic-item__sub-title annotation">người chơi</div>
                     </div>
                     <hr />
-                    <div className="rank__statistic-item">
+                    <div className="statistic-item">
                         <div>
-                            <strong className="rank__statistic-item__title">{Math.ceil(0.4 * totalUsers)}+</strong>
+                            <strong className="statistic-item__title">{formatFloat(Math.ceil(0.4 * totalUsers))}+</strong>
                         </div>
-                        <div className="rank__statistic-item__sub-title annotation">người chơi hợp lệ</div>
+                        <div className="statistic-item__sub-title annotation">người chơi hợp lệ</div>
                     </div>
                     <hr />
-                    <div className="rank__statistic-item">
+                    <div className="statistic-item">
                         <div>
-                            <strong className="rank__statistic-item__title">2K USD</strong>
+                            <strong className="statistic-item__title">5K USD</strong>
                         </div>
-                        <div className="rank__statistic-item__sub-title annotation">tiền thưởng</div>
+                        <div className="statistic-item__sub-title annotation">tiền thưởng</div>
                     </div>
                 </div>
             </section >
 
-            <section className="mb-12">
-                <div className="rank__statistic-container">
-                    <div className="rank__statistic-item">
-                        <div>
-                            <strong className="rank__statistic-item__title">Mốc 01</strong>
-                        </div>
-                        <div className="rank__statistic-item__sub-title annotation">50,000 người dùng</div>
-                    </div>
-
-                    <hr />
-
-                    <div className="rank__statistic-item">
-                        <div>
-                            <strong className="rank__statistic-item__title">Mốc 01</strong>
-                        </div>
-                        <div className="rank__statistic-item__sub-title annotation">50,000 người dùng</div>
-                    </div>
-
-                    <div className="rank__statistic-item">
-                        <div>
-                            <strong className="rank__statistic-item__title">Mốc 01</strong>
-                        </div>
-                        <div className="rank__statistic-item__sub-title annotation">50,000 người dùng</div>
-                    </div>
-
-
-                    <div className="rank__statistic-item">
-                        <div>
-                            <strong className="rank__statistic-item__title">{Math.ceil(0.4 * totalUsers)}+</strong>
-                        </div>
-                        <div className="rank__statistic-item__sub-title annotation">người chơi hợp lệ</div>
-                    </div>
-                    <hr />
-                    <div className="rank__statistic-item">
-                        <div>
-                            <strong className="rank__statistic-item__title">2K USD</strong>
-                        </div>
-                        <div className="rank__statistic-item__sub-title annotation">tiền thưởng</div>
-                    </div>
-                </div>
-
-                <br />
-                Mốc 02: 100,000 người dùng
-                <br />
-                Mốc 03: 150,000 người dùng
-                <br />
-                Mốc 04: 200,000 người dùng
-                Mốc 05: 250,000 người dùng
+            <section className="mb-12 text-align-center rank__leader-board">
+                <h4 className="mb-12 text-align-center">
+                    Các mốc phần thưởng
+                </h4>
+                <table className=''>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Số người dùng</th>
+                            <th>Phần thưởng</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr className={`${totalUsers >= 50000 ? "active" : ""}`}>
+                            <td>01</td>
+                            <td>50,000</td>
+                            <td>1K USD</td>
+                            <td>{totalUsers >= 50000 ? "Hoàn thành" : "Chưa đạt"}</td>
+                        </tr>
+                        <tr className={`${totalUsers >= 100000 ? "active" : ""}`}>
+                            <td>02</td>
+                            <td>100,000</td>
+                            <td>2K USD</td>
+                            <td>{totalUsers >= 100000 ? "Hoàn thành" : "Chưa đạt"}</td>
+                        </tr>
+                        <tr className={`${totalUsers >= 150000 ? "active" : ""}`}>
+                            <td>03</td>
+                            <td>150,000</td>
+                            <td>3K USD</td>
+                            <td>{totalUsers >= 150000 ? "Hoàn thành" : "Chưa đạt"}</td>
+                        </tr>
+                        <tr className={`${totalUsers >= 200000 ? "active" : ""}`}>
+                            <td>04</td>
+                            <td>200,000</td>
+                            <td>4K USD</td>
+                            <td>{totalUsers >= 200000 ? "Hoàn thành" : "Chưa đạt"}</td>
+                        </tr>
+                        <tr className={`${totalUsers >= 250000 ? "active" : ""}`}>
+                            <td>05</td>
+                            <td>250,000</td>
+                            <td>5K USD</td>
+                            <td>{totalUsers >= 250000 ? "Hoàn thành" : "Chưa đạt"}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </section>
 
             <section className="rank__leader-board">
@@ -162,7 +160,7 @@ export default function Rank() {
                     </tbody>
                 </table>
 
-                <p className="annotation text-align-center">{formatFloat(totalUsers - 10)}+ người chơi khác cũng đang leo BXH DragonTap</p>
+                <p className="annotation text-align-center"><span className="highlight-text green fw-bold">{formatFloat(totalUsers - 10)}+</span> người chơi khác cũng đang leo BXH DragonTap</p>
             </section>
         </div>
     );

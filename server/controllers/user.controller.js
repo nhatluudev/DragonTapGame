@@ -4,7 +4,7 @@ import crypto from 'crypto';
 import dotenv from 'dotenv';
 dotenv.config();
 import User from "../models/user.model.js";
-import { formatNamiId } from '../utils/formatter.js';
+import { formatFloat, formatNamiId } from '../utils/formatter.js';
 import moment from 'moment-timezone';
 
 class UserController {
@@ -38,7 +38,7 @@ class UserController {
             return res.json({ userInfo: user });
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Server error' });
+            res.status(500).json({ message: 'Có lỗi xảy ra' });
         }
     };
 
@@ -65,7 +65,7 @@ class UserController {
             return res.json({ userInfo: user });
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Server error' });
+            res.status(500).json({ message: 'Có lỗi xảy ra' });
         }
     };
 
@@ -78,33 +78,58 @@ class UserController {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-            const currentDateHCM = this.getCurrentTimeInVietnam();  // Current date in HCM timezone
+            const currentDateHCM = this.getCurrentTimeInVietnam(); // Current date in HCM timezone
 
-            // Check if lastLoginDate is null, meaning the user has never logged in before
             if (!user.lastLoginDate) {
-                // Allow login (as it would be their first time)
-                return res.json({ hasLoggedInToday: false });
+                // The user has never logged in before
+                return res.json({
+                    hasLoggedInToday: false,
+                    user
+                });
             }
 
-            const lastLoginDateHCM = moment(user.lastLoginDate).tz('Asia/Ho_Chi_Minh');  // Last login in HCM timezone
+            const lastLoginDateHCM = moment(user.lastLoginDate).tz('Asia/Ho_Chi_Minh'); // Last login in HCM timezone
+            const currentStartOfDayHCM = currentDateHCM.clone().startOf('day'); // Start of today in HCM timezone
+            const lastLoginStartOfDayHCM = lastLoginDateHCM.clone().startOf('day'); // Start of last login day
 
-            // Reset the time of currentDateHCM and lastLoginDateHCM to 0:00 to check the day boundary
-            const currentStartOfDayHCM = currentDateHCM.clone().startOf('day');  // 0:00 of today in HCM timezone
-            const lastLoginStartOfDayHCM = lastLoginDateHCM.clone().startOf('day');  // 0:00 of the last login day
+            const isNewDay = currentStartOfDayHCM.isAfter(lastLoginStartOfDayHCM); // Check if today is after the last login day
 
-            // Check if the current time is after 0:00 on a new day
-            const hasLoggedInToday = !currentStartOfDayHCM.isAfter(lastLoginStartOfDayHCM);
+            // Calculate day difference to reset the streak if necessary
+            const dayDiff = currentDateHCM.diff(lastLoginDateHCM, 'days'); // Number of days between last login and today
 
-            console.log("Current HCM Date:", currentDateHCM.format());
-            console.log("Last Login HCM Date:", lastLoginDateHCM.format());
-            console.log("Current start of day:", currentStartOfDayHCM.format());
-            console.log("Last login start of day:", lastLoginStartOfDayHCM.format());
-            console.log("Has logged in today:", hasLoggedInToday);
+            if (isNewDay) {
+                if (dayDiff === 1 && !user.maxLoginStreakReached) {
+                    // It's a new day and user logged in consecutively, so no need to reset the streak
+                    return res.json({
+                        hasLoggedInToday: false,
+                        user
+                    });
+                } else if (dayDiff > 1 && !user.maxLoginStreakReached) {
+                    // The user missed one or more days, so we need to reset the streak
+                    user.loginStreak = 0; // Reset streak
+                    await user.save();
 
-            return res.json({ hasLoggedInToday });
+                    return res.json({
+                        hasLoggedInToday: false,
+                        user
+                    });
+                } else if (user.maxLoginStreakReached) {
+                    // Max streak was reached, streak won't reset, just award 500 tokens
+                    return res.json({
+                        hasLoggedInToday: false,
+                        user
+                    });
+                }
+            } else {
+                // User has already logged in today
+                return res.json({
+                    hasLoggedInToday: true,
+                    user
+                });
+            }
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ message: 'Server error' });
+            return res.status(500).json({ message: 'Có lỗi xảy ra' });
         }
     };
 
@@ -121,55 +146,57 @@ class UserController {
 
             // If lastLoginDate is null, treat it as the first login
             if (!user.lastLoginDate) {
-                // User is logging in for the first time
-                user.loginStreak = 1; // Start the streak at day 1
+                user.loginStreak = 1;
                 user.lastLoginDate = new Date();  // Store the login date in UTC
-                const currentReward = UserController.getRewardForDay(user.loginStreak); // Get reward for day 1
-                user.tokens += currentReward; // Add reward to user's tokens
+                const currentReward = UserController.getRewardForDay(user.loginStreak);
+                user.tokens += currentReward;
                 user.streakRewards = currentReward;
                 await user.save();
 
                 return res.json({
                     success: true,
                     loginStreak: user.loginStreak,
-                    reward: currentReward || 0, // Reward for the first day
+                    reward: currentReward || 0,
+                    user
                 });
             }
 
-            const lastLoginDateHCM = moment(user.lastLoginDate).tz('Asia/Ho_Chi_Minh');  // Last login in HCM timezone
-
-            // Reset the time of currentDateHCM and lastLoginDateHCM to 0:00 to check the day boundary
-            const currentStartOfDayHCM = currentDateHCM.clone().startOf('day');  // 0:00 of today in HCM timezone
-            const lastLoginStartOfDayHCM = lastLoginDateHCM.clone().startOf('day');  // 0:00 of the last login day
-
-            // Check if the last login was on a different day than today
+            const lastLoginDateHCM = moment(user.lastLoginDate).tz('Asia/Ho_Chi_Minh');
+            const currentStartOfDayHCM = currentDateHCM.clone().startOf('day');
+            const lastLoginStartOfDayHCM = lastLoginDateHCM.clone().startOf('day');
             const isNewDay = currentStartOfDayHCM.isAfter(lastLoginStartOfDayHCM);
 
-            console.log("Current HCM Date:", currentDateHCM.format());
-            console.log("Last Login HCM Date:", lastLoginDateHCM.format());
-
             if (isNewDay) {
-                console.log("A new day detected");
+                const dayDiff = currentDateHCM.diff(lastLoginDateHCM, 'days');
 
-                const dayDiff = currentDateHCM.diff(lastLoginDateHCM, 'days');  // Calculate the day difference
-
-                if (dayDiff === 1) {
-                    user.loginStreak += 1; // Continue the streak
-                } else if (dayDiff > 1) {
-                    user.loginStreak = 1; // Reset the streak if it's been more than a day
+                if (dayDiff === 1 && !user.maxLoginStreakReached) {
+                    user.loginStreak += 1;
+                } else if (dayDiff > 1 && !user.maxLoginStreakReached) {
+                    user.loginStreak = 1; // Reset streak if missed more than 1 day
                 }
 
-                // Update last login date and save the user
-                user.lastLoginDate = new Date();  // Store in UTC
-                const currentReward = UserController.getRewardForDay(user.loginStreak); // Get reward for the current streak day
-                user.tokens += currentReward; // Add reward to user tokens
+                console.log(user.maxLoginStreakReached === true ? "111" : "222")
+                // Award reward based on the streak or max streak reward (500 tokens)
+                const currentReward = user.maxLoginStreakReached === true
+                    ? 500 // Award fixed 500 tokens after max streak
+                    : UserController.getRewardForDay(user.loginStreak);
+
+                // Check if they reached the maximum streak
+                if (user.loginStreak >= 9) {
+                    user.maxLoginStreakReached = true;
+                    user.loginStreak = 9; // Keep streak capped at 9
+                }
+
+                user.lastLoginDate = new Date();
+                user.tokens += currentReward;
                 user.streakRewards = currentReward;
                 await user.save();
 
                 return res.json({
                     success: true,
-                    loginStreak: user.loginStreak,
-                    reward: currentReward || 0, // Reward for the current day
+                    loginStreak: user.loginStreak,  // Updated or reset streak
+                    reward: currentReward || 0,
+                    user
                 });
             } else {
                 return res.json({
@@ -179,14 +206,19 @@ class UserController {
             }
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ message: 'Server error' });
+            return res.status(500).json({ message: 'Có lỗi xảy ra' });
         }
     };
 
     // Function to get the reward for the current day
     static getRewardForDay(streak) {
         const rewards = [500, 1000, 2500, 5000, 15000, 25000, 50000, 80000, 200000]; // Example rewards
-        return rewards[streak - 1] || rewards[rewards.length - 1]; // Return reward for the current streak day or cap at the max reward
+        // If streak is within the reward range, return the corresponding reward
+        if (streak <= rewards.length) {
+            return rewards[streak - 1]; // Rewards for days within the defined streak range
+        } else {
+            return 500; // After reaching the max reward, return 500 tokens daily
+        }
     }
 
     startMission = async (req, res) => {
@@ -204,7 +236,7 @@ class UserController {
             return res.json({ user });
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ message: 'Server error' });
+            return res.status(500).json({ message: 'Có lỗi xảy ra' });
         }
     }
 
@@ -223,7 +255,7 @@ class UserController {
             return res.json({ user });
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ message: 'Server error' });
+            return res.status(500).json({ message: 'Có lỗi xảy ra' });
         }
     }
 
@@ -246,7 +278,7 @@ class UserController {
             return res.json({ user });
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ message: 'Server error' });
+            return res.status(500).json({ message: 'Có lỗi xảy ra' });
         }
     }
 
@@ -277,7 +309,7 @@ class UserController {
             }
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ message: 'Server error' });
+            return res.status(500).json({ message: 'Có lỗi xảy ra' });
         }
     };
 
@@ -322,7 +354,7 @@ class UserController {
             }
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ message: 'Server error' });
+            return res.status(500).json({ message: 'Có lỗi xảy ra' });
         }
     };
 
@@ -344,7 +376,7 @@ class UserController {
             });
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ message: 'Server error' });
+            return res.status(500).json({ message: 'Có lỗi xảy ra' });
         }
     };
 
@@ -474,14 +506,14 @@ class UserController {
                     };
                 }
             } else {
-                console.error(`Error: ${response.status}`, await response.json());
+                console.error(`Có lỗi xảy ra: ${response.status}`, await response.json());
                 return {
                     isInCommunity: false,
                     isKyc: false
                 };
             }
         } catch (error) {
-            console.error('Error fetching referral data:', error);
+            console.error('Có lỗi xảy ra:', error);
             return {
                 isInCommunity: false,
                 isKyc: false
@@ -489,7 +521,7 @@ class UserController {
         }
     };
 
-    // Refferal functionality
+    // Referral functionality
     recordReferral = async (req, res) => {
         const { referrerTelegramId, userTelegramId, firstName, lastName } = req.body;
 
@@ -525,9 +557,140 @@ class UserController {
             return res.status(200).json({ message: 'Referral recorded successfully', referredUser });
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ message: 'Server error' });
+            return res.status(500).json({ message: 'Có lỗi xảy ra' });
         }
     }
+
+    getReferralRewardStatistics = async (req, res) => {
+        try {
+            const { telegramId } = req.body;  // Get the referrer's Telegram ID
+            const referrer = await User.findOne({ telegramId });
+            console.log(telegramId)
+            console.log(referrer)
+
+            if (!referrer) {
+                return res.status(404).json({ message: 'Referrer not found' });
+            }
+
+            // Fetch total tokens earned by all referred users
+            const referredUsers = await User.find({ telegramId: { $in: referrer.referrals } });
+            const totalTokensFromReferrals = referredUsers.reduce((total, user) => total + user.tokens, 0);
+
+            // Calculate collectable tokens (tokens earned since last collection)
+            const tokensEarnedSinceLastCollection = totalTokensFromReferrals - referrer.lastReferralCollection;
+            const collectableTokens = Math.ceil(tokensEarnedSinceLastCollection * 0.10); // 10% of new tokens
+
+            // Prepare the statistics response
+            const referralRewardStatistics = {
+                collected: referrer.totalReferralTokensCollected, // "Đã nhận"
+                collectable: Math.max(collectableTokens, 0), // "Khả dụng"
+            };
+
+            return res.status(200).json(referralRewardStatistics);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Có lỗi xảy ra' });
+        }
+    };
+
+
+    collectReferralReward = async (req, res) => {
+        try {
+            const { telegramId } = req.body;  // Get the referrer's Telegram ID
+            const referrer = await User.findOne({ telegramId });
+
+            if (!referrer) {
+                return res.status(404).json({ message: 'Referrer not found' });
+            }
+
+            // Fetch total tokens earned by all referred users
+            const referredUsers = await User.find({ telegramId: { $in: referrer.referrals } });
+            const totalTokensFromReferrals = referredUsers.reduce((total, user) => total + user.tokens, 0);
+
+            // Calculate the new tokens earned by referred users since the last collection
+            const tokensEarnedSinceLastCollection = totalTokensFromReferrals - referrer.lastReferralCollection;
+
+            // If no new tokens are available to collect
+            if (tokensEarnedSinceLastCollection <= 0) {
+                return res.status(400).json({ message: 'Hiện chưa có hoa hồng khả dụng' });
+            }
+
+            // Calculate 10% of the new tokens and round up
+            const referralBonus = Math.ceil(tokensEarnedSinceLastCollection * 0.10);
+
+            // Add the referral bonus to the referrer's total tokens
+            referrer.tokens += referralBonus;
+
+            // Update the last referral collection to the current total tokens from referrals
+            referrer.lastReferralCollection = totalTokensFromReferrals;
+
+            // Update the total referral tokens collected field
+            referrer.totalReferralTokensCollected += referralBonus;
+
+            // Save the updated referrer
+            await referrer.save();
+
+            return res.status(200).json({ message: `Đã nhận ${formatFloat(referralBonus)} tokens hoa hồng giới thiệu`, referrer });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Có lỗi xảy ra' });
+        }
+    };
+
+    claimReferralReward = async (req, res) => {
+        try {
+            const { telegramId, milestone } = req.body;
+            const user = await User.findOne({ telegramId });
+
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            // Define milestone requirements
+            const milestones = {
+                invite1: { count: 1, reward: 10000 },
+                invite5: { count: 5, reward: 30000 },
+                invite10: { count: 10, reward: 50000 },
+                invite20: { count: 20, reward: 100000 },
+                invite50: { count: 50, reward: 150000 },
+                invite1000: { count: 1000, reward: 500000 }
+            };
+
+            // Validate if the milestone exists
+            const milestoneInfo = milestones[milestone];
+            if (!milestoneInfo) {
+                return res.status(400).json({ message: 'Có lỗi xảy ra' });
+            }
+
+            // Check if the user has already claimed this reward
+            if (user.referralMissions[milestone]) {
+                return res.status(400).json({ message: 'Bạn đã nhận thưởng nhiệm vụ này rồi' });
+            }
+
+            // Check if the user has enough referrals for this milestone
+            if (user.referrals.length < milestoneInfo.count) {
+                return res.status(400).json({ message: `Bạn cần mời ${milestoneInfo.count} người bạn để nhận thưởng ` });
+            }
+
+            // Add the reward tokens to the user's balance
+            user.tokens += milestoneInfo.reward;
+
+            // Mark this milestone as claimed
+            user.referralMissions[milestone] = true;
+
+            // Save the updated user
+            await user.save();
+
+            return res.status(200).json({
+                message: `Đã nhận ${milestoneInfo.reward} tokens từ nhiệm vụ mời ${milestoneInfo.count} bạn bè`,
+                user
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Có lỗi xảy ra' });
+        }
+    };
+
 }
 
 export default new UserController();

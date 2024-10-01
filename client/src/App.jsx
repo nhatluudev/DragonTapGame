@@ -12,6 +12,7 @@ import KycTutorial from "./components/kycMission/KycTutorial.jsx";
 import InCommunityMission from "./components/InCommunityMission/InCommunityMission.jsx";
 import InCommunityTutorial from "./components/InCommunityMission/InCommunityTutorial.jsx";
 import OnBoard from "./components/onBoard/OnBoard.jsx"; // Import your OnBoard component
+import Friend from './pages/friend/Friend.jsx';
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,12 @@ const routes = [
             path: "check-in-community/check-in-community-tutorial",
             element: <InCommunityTutorial />,
           }
+        ]
+      },
+      {
+        path: "/friends",
+        element: <Friend />,
+        children: [
         ]
       },
       {

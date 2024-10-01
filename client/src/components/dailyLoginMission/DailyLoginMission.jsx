@@ -12,7 +12,6 @@ import { formatFloat } from "../../utils/formatter";
 export default function DailyLoginMission() {
     const { userInfo, setUserInfo } = useAuth();
     const { setModalInfo } = useModal();
-    const [loginStreak, setLoginStreak] = useState(0); // Default to 0 if userInfo isn't ready
     const loginStreakRewards = [500, 1000, 2500, 5000, 15000, 25000, 50000, 80000, 200000];
     const [hasLoggedInToday, setHasLoggedInToday] = useState(false); // Tracks if the user already logged in
     const [loading, setLoading] = useState(true); // Tracks the loading state
@@ -21,22 +20,22 @@ export default function DailyLoginMission() {
     // Update loginStreak and streakRewards when userInfo becomes available
     useEffect(() => {
         if (userInfo) {
-            setLoginStreak(userInfo.loginStreak || 0);
             checkLoginStatus();
         }
-    }, [userInfo]);
+    }, []);
 
-    // Function to check if the user has already logged in today
+    // Function to check if the user has already logged in today and get the correct login streak
     const checkLoginStatus = async () => {
         setLoading(true);
         try {
             const response = await apiUtils.get(`/users/checkLoginStatus/${userInfo?.telegramId}`);
-            console.log(response.data)
             setHasLoggedInToday(response.data.hasLoggedInToday);
+            // Update login streak with correct data from the server
+            setUserInfo(response.data.user)
         } catch (error) {
             console.error("Error checking login status:", error);
         } finally {
-            setLoading(false); // Stop loading after the request is complete
+            setLoading(false);
         }
     };
 
@@ -44,22 +43,20 @@ export default function DailyLoginMission() {
     const handleLoginReward = async () => {
         try {
             const response = await apiUtils.post(`/users/getLoginReward`, { telegramId: userInfo?.telegramId });
-            console.log(response)
             if (response.data.success) {
-                setLoginStreak(); // Update login streak
                 setModalInfo({
                     status: "success",
-                    message: `Đã nhận ${response.data.reward} tokens`
-                })
-                setUserInfo({
-                    ...userInfo, loginStreak: response.data.loginStreak, tokens: userInfo.tokens + response.data.reward
-                })
-                setHasLoggedInToday(true); // Set to true so the user can't claim twice
+                    message: `Đã nhận ${formatFloat(response.data.reward)} tokens`
+                });
+
+                setUserInfo(response.data.user);
+
+                setHasLoggedInToday(true);
             } else {
                 setModalInfo({
                     status: "error",
                     message: response.data.message
-                })
+                });
             }
         } catch (error) {
             console.error("Error claiming login reward:", error);
@@ -98,13 +95,17 @@ export default function DailyLoginMission() {
 
                 <div className="daily-login-mission-container">
                     {Array.from({ length: 9 }, (_, index) => (
-                        <div key={index} className={`daily-login-mission-item btn ${index < loginStreak ? 'btn-4' : ''}`}>
+                        <div key={index} className={`daily-login-mission-item btn ${index < userInfo?.loginStreak ? 'btn-4' : ''}`}>
                             <span className="daily-login-mission-item__title">Ngày {index + 1}</span>
                             <img src={TokenIcon} alt="" className="token-ic sm" />
                             <span className="daily-login-mission-item__token">{formatFloat(loginStreakRewards[index]) || 0}</span>
                         </div>
                     ))}
                 </div>
+
+                <p className="annotation">{
+                    userInfo?.maxLoginStreakReached && "Phần thưởng là 500 tokens sau chuỗi 9 ngày đăng nhập"
+                }</p>
 
                 <button
                     className={`btn ${hasLoggedInToday ? "btn-5" : "btn-4"} btn-lg w-100 mt-12 mb-20`}

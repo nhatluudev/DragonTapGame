@@ -15,6 +15,8 @@ const userSchema = new mongoose.Schema({
         default: null,
     },
     referrals: [{ type: String }],
+    lastReferralCollection: { type: Number, default: 0 },  // Tokens collected from referrals last time
+    totalReferralTokensCollected: { type: Number, default: 0 },
     lastTenMinCheckIn: { type: Date, default: null }, // For the 10-minute mission
     isInCommunity: { type: Boolean, default: false },
     isKyc: { type: Boolean, default: false },
@@ -45,6 +47,15 @@ const userSchema = new mongoose.Schema({
             lastCheckTime: { type: Date, default: null },
         },
     },
+    referralMissions: {
+        invite1: { type: Boolean, default: false },  // Reward claimed for inviting 1 friend
+        invite5: { type: Boolean, default: false },  // Reward claimed for inviting 5 friends
+        invite10: { type: Boolean, default: false }, // Reward claimed for inviting 10 friends
+        invite20: { type: Boolean, default: false }, // Reward claimed for inviting 20 friends
+        invite50: { type: Boolean, default: false }, // Reward claimed for inviting 50 friends
+        invite1000: { type: Boolean, default: false }, // Reward claimed for inviting 1000 friends
+    },
+    maxLoginStreakReached: { type: Boolean, default: false },
 });
 
 const User = mongoose.model('User', userSchema);

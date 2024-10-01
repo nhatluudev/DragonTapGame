@@ -20,5 +20,8 @@ userRouter.post("/checkMission", asyncHandler(UserController.checkMission))
 userRouter.post("/rewardMission", asyncHandler(UserController.rewardMission))
 
 userRouter.post("/recordReferral", asyncHandler(UserController.recordReferral))
+userRouter.post("/collectReferralReward", asyncHandler(UserController.collectReferralReward))
+userRouter.post("/getReferralRewardStatistics", asyncHandler(UserController.getReferralRewardStatistics))
+userRouter.post("/claimReferralReward", asyncHandler(UserController.claimReferralReward))
 
 export default userRouter;

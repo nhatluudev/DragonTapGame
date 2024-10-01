@@ -19,7 +19,7 @@ export default function Community() {
                 </div>
 
                 <h3>
-                    Nơi chia sẻ kinh nghiệm đầu tư và Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                    T2 Capital đồng hành cùng bạn, kiến tạo con đường đầu tư thông minh và bền vững.
                 </h3>
                 <hr />
                 <p className="annotation">Hơn <span className="highlight-green-text fw-bold">1,000+</span> thành viên mới đã gia nhập cộng đồng T2Capital</p>
