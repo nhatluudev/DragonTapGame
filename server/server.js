@@ -222,7 +222,7 @@ Tham gia tapping game để thu thập DRAS và nhận thưởng
   });
 
   // Save referral and create/fetch User B in the backend
-  axios.post(`${process.env.BACKEND_ENDPOINT}/users/createOrFetchUser`, {
+  axios.post(`${process.env.BACKEND_ENDPOINT}/api/users/createOrFetchUser`, {
     telegramId: userTelegramId,
     firstName: userFirstName,
     lastName: userLastName
@@ -230,7 +230,7 @@ Tham gia tapping game để thu thập DRAS và nhận thưởng
     .then(response => {
       // If User B is created or fetched successfully, record the referral
       if (referralCode) {
-        axios.post(`${process.env.BACKEND_ENDPOINT}/users/recordReferral`, {
+        axios.post(`${process.env.BACKEND_ENDPOINT}/api/users/recordReferral`, {
           referrerTelegramId: referralCode,
           userTelegramId: userTelegramId
         })
