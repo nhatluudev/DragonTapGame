@@ -526,6 +526,11 @@ class UserController {
         const { referrerTelegramId, userTelegramId, firstName, lastName } = req.body;
 
         try {
+            // Prevent the referrer and referred user from being the same person
+            if (referrerTelegramId === userTelegramId) {
+                return res.status(400).json({ message: 'Bạn không thể tự giới thiệu bản thân mình' });
+            }
+
             // Find the referrer (User A) by their Telegram ID
             const referrer = await User.findOne({ telegramId: referrerTelegramId });
             if (!referrer) {
