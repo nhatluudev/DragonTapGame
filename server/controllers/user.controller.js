@@ -546,20 +546,26 @@ class UserController {
                     referralCode,
                 });
                 await referredUser.save();
+            } else {
+                // Check if User B is already referred by another user
+                const isReferredByAnother = await User.findOne({ referrals: userTelegramId });
+                if (isReferredByAnother) {
+                    return res.status(400).json({ message: 'Người chơi này đã nhận lời giới thiệu từ người khác' });
+                }
             }
 
-            // Record the referral by adding User B's telegramId to referrer
+            // Record the referral by adding User B's telegramId to referrer (User A)
             if (!referrer.referrals.includes(userTelegramId)) {
                 referrer.referrals.push(userTelegramId);
                 await referrer.save();
             }
 
-            return res.status(200).json({ message: 'Referral recorded successfully', referredUser });
+            return res.status(200).json({ message: 'Lời mời giới thiệu đã được ghi nhận', referredUser });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ message: 'Có lỗi xảy ra' });
         }
-    }
+    };
 
     getReferralRewardStatistics = async (req, res) => {
         try {
@@ -584,6 +590,7 @@ class UserController {
             const referralRewardStatistics = {
                 collected: referrer.totalReferralTokensCollected, // "Đã nhận"
                 collectable: Math.max(collectableTokens, 0), // "Khả dụng"
+                referrals: referrer.referrals.length
             };
 
             return res.status(200).json(referralRewardStatistics);

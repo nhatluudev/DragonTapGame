@@ -59,7 +59,7 @@ bot.on("polling_error", (error) => {
 });
 
 // Listen for `/start` command without a referral code
-bot.onText(/\/start/, (msg) => {
+bot.onText(/^\/start$/, (msg) => {
   console.log("TELEGRAM USER DATA");
   const chatId = msg.chat.id;
   const username = msg.from.first_name || 'Guest';
@@ -163,9 +163,6 @@ Tham gia tapping game để thu thập DRAS và nhận thưởng
             console.error('Error recording referral', error);
           });
       }
-
-      // Send a welcome message to User B
-      bot.sendMessage(chatId, `Welcome to Qt Tap! You were referred by ${referralCode || 'nobody'}.`);
     })
     .catch(error => {
       console.error('Error creating or fetching user', error);

@@ -13,7 +13,7 @@ import { formatFloat } from "../../utils/formatter.js";
 export default function Friend() {
     const { userInfo, setUserInfo } = useAuth();
     const { setModalInfo } = useModal();
-    const [referralRewardStatistics, setReferralRewardStatistics] = useState({ collected: 0, collectable: 0 });
+    const [referralRewardStatistics, setReferralRewardStatistics] = useState({ referrals: 0, collected: 0, collectable: 0 });
 
     const handleShare = () => {
         const message = encodeURIComponent("Tap càng hăng, thưởng càng lớn. Tham gia Dragon Tap ngay");
@@ -97,7 +97,7 @@ export default function Friend() {
                 <div className="statistic-container">
                     <div className="statistic-item">
                         <div>
-                            <strong className="statistic-item__title">{userInfo?.referrals?.length}</strong>
+                            <strong className="statistic-item__title">{formatFloat(referralRewardStatistics.referrals)}</strong>
                         </div>
                         <div className="statistic-item__sub-title annotation">Bạn bè</div>
                     </div>
