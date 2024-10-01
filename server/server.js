@@ -182,7 +182,8 @@ bot.on("polling_error", (error) => {
 bot.onText(/\/start (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
   const userTelegramId = msg.from.id; // User B's Telegram ID
-  const username = msg.from.first_name || 'Anonymous'; // User B's First Name
+  const userFirstName = msg.from.first_name || 'Anonymous'; // User B's First Name
+  const userLastName = msg.from.last_name || 'Anonymous'; // User B's Last Name
   const referralCode = match[1]; // Extract referral code (User A's Telegram ID)
 
   // Log the referral code (you can send this to your backend or save it in a database)
@@ -194,7 +195,7 @@ bot.onText(/\/start (.+)/, (msg, match) => {
     caption: "",
   }).then(() => {
     // After sending the image, send the message content
-    const message = `Hi ${username}, chào mừng bạn đến với DragonTap!
+    const message = `Hi ${userFirstName}, chào mừng bạn đến với DragonTap!
 
 Tham gia tapping game để thu thập DRAS và nhận thưởng 
 💰 1,000,000 DRAS hoàn toàn miễn phí
@@ -219,6 +220,35 @@ Tham gia tapping game để thu thập DRAS và nhận thưởng
   }).catch((err) => {
     console.error("Error sending photo:", err);
   });
+
+  // Save referral and create/fetch User B in the backend
+  axios.post(`${process.env.BACKEND_ENDPOINT}/users/createOrFetchUser`, {
+    telegramId: userTelegramId,
+    firstName: userFirstName,
+    lastName: userLastName
+  })
+    .then(response => {
+      // If User B is created or fetched successfully, record the referral
+      if (referralCode) {
+        axios.post(`${process.env.BACKEND_ENDPOINT}/users/recordReferral`, {
+          referrerTelegramId: referralCode,
+          userTelegramId: userTelegramId
+        })
+          .then(referralResponse => {
+            console.log('Referral recorded successfully', referralResponse.data);
+          })
+          .catch(error => {
+            console.error('Error recording referral', error);
+          });
+      }
+
+      // Send a welcome message to User B
+      bot.sendMessage(chatId, `Welcome to Qt Tap! You were referred by ${referralCode || 'nobody'}.`);
+    })
+    .catch(error => {
+      console.error('Error creating or fetching user', error);
+      bot.sendMessage(chatId, 'There was an error processing your referral.');
+    });
 });
 
 console.log('Telegram bot is running...');
